@@ -97,7 +97,7 @@ function Alecto(){
                 this.log("Recovered native function:"+el.alias+"-"+elx);
             });
         });
-        
+        _frame.style.display = "none";
     };
 
     const locateJsonpAddress = ()=>{
@@ -246,6 +246,7 @@ function Alecto(){
         w.style.fontWeight = "bold";
         w.style.paddingLeft = "20px";
         w.style.paddingTop = "10px";
+        w.style.fontSize = "18px";
         document.body.appendChild(w);
         this.attr.bannerObj = w;
     };

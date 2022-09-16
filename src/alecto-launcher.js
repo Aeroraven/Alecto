@@ -1,4 +1,8 @@
 (function(){
+    if('alecto' in window){
+        alert("Alecto has already been launched.");
+        return;
+    }
     (new Promise(async (resolve)=>{
         function fetchTimeout(fetch_p,timeout=20000){
             var abort_fn = null;
@@ -19,6 +23,7 @@
         var _frame = document.createElement('iframe');
         document.body.appendChild(_frame);
         window.fetch = _frame.contentWindow.fetch;
+        _frame.style.display = "none";
         var srcMirrors = [
             'https://raw.githubusercontent.com/Aeroraven/Alecto/main/src/alecto.js',
             'https://aeroraven.github.io/alecto/alecto.js',
