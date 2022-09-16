@@ -1,4 +1,5 @@
 (function(){
+    alert("Launcher starts. Please wait...");
     if('alecto' in window){
         alert("Alecto has already been launched.");
         return;
@@ -26,13 +27,12 @@
         _frame.style.display = "none";
         var srcMirrors = [
             'https://raw.githubusercontent.com/Aeroraven/Alecto/main/src/alecto.js',
-            'https://aeroraven.github.io/alecto/alecto.js',
             'https://localhost:3000/alecto.js',
         ];
         var w = "";
         for(var i = 0;i<srcMirrors.length;i++){
             try {
-                w = await (await fetchTimeout(window.fetch(srcMirrors[i]),5000)).text();
+                w = await (await fetchTimeout(window.fetch(srcMirrors[i]),10000)).text();
                 if(w!=""){
                     break;
                 }
