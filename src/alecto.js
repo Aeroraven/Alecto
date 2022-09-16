@@ -37,6 +37,17 @@ function Alecto(){
     const log = (x)=>{
         console.log("[Alecto] "+x);
     };
+    const formatEllipsis = (str = '', limitLen = 48)=>{
+        let 
+          len = 0,
+          reg = /[\x00-\xff]/, 
+          strs = str.split(''),
+          inx = strs.findIndex(s => {
+            len += reg.test(s) ? 1 : 2
+            if (len > limitLen) return true
+          })
+        return inx === -1 ? str : str.substr(0, inx) + '...';
+    };
 
     const xhrGet = async (url,binary = false)=>{
         let response = await window.fetch(url);
@@ -138,11 +149,11 @@ function Alecto(){
             await new Promise((r)=>{
                 setTimeout(()=>{
                     r();
-                },1000);
+                },2000);
             });
         }
         
-        return content;
+        return commentLists;
     };
 
     const analyzeComments = (commentObject)=>{
@@ -187,6 +198,7 @@ function Alecto(){
     const createZip = async (analyzedResult)=>{
         var zip = new JSZip();
         let idx = 0;
+        let size = 0;
         for(let i=0;i<analyzedResult.length;i++){
             this.setBannerProg(40+40*(i/analyzedResult.length));
             this.log("Gathering resource, at index:"+i+" / "+analyzedResult.length);
@@ -194,9 +206,10 @@ function Alecto(){
             let folder = zip.folder(el.date+"-"+el.user);
             
             for(let j=0;j<el.photos.length;j++){
-                this.setBannerInfo(this.lang.download+" ("+i+" / "+analyzedResult.length+"):"+el.photos[j].replace(/\/\//g,""),false);
+                this.setBannerInfo(this.lang.download+" ("+i+" / "+analyzedResult.length+", "+this.lang.downloaded+":"+ parseInt(size/1024/1024) +"MB ):"+this.formatEllipsis(el.photos[j].replace(/\/\//g,"")),false);
                 this.log("Fetching image resource:"+el.photos[j].replace(/\/\//g,""));
                 let x = await this.xhrGet("https:"+el.photos[j],true);
+                size+=x.size;
                 await new Promise((r)=>{
                     setTimeout(()=>{
                         r();
@@ -205,9 +218,10 @@ function Alecto(){
                 folder.file(j+".jpg",x);
             }
             if(el.video!=null){
-                this.setBannerInfo(this.lang.download+" ("+i+" / "+analyzedResult.length+"):"+el.video.replace(/\/\//g,""),false);
+                this.setBannerInfo(this.lang.download+" ("+i+" / "+analyzedResult.length+", "+this.lang.downloaded+":"+ parseInt(size/1024/1024) +"MB ):"+this.formatEllipsis(el.video.replace(/\/\//g,"")),false);
                 this.log("Fetching video resource:"+el.video);
                 let x = await this.xhrGet("https:"+el.video,true);
+                size+=x.size;
                 folder.file("attachment.mp4",x);
             }
             folder.file("comment.txt",el.content);
@@ -377,7 +391,7 @@ function Alecto(){
         if(true){
             inj += `  <a class="alecto-btn" id='alecto-btn-a' href='javascript:void(0)' onclick='window.alecto.run()'>`+this.lang.runLabel+`</a>`;
         }
-        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1. Repo:https://github.com/Aeroraven/Alecto")'>`+this.lang.about+`</a>`;
+        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1b. Repo:https://github.com/Aeroraven/Alecto")'>`+this.lang.about+`</a>`;
         inj += "</span>";
         w.innerHTML = inj;
     };
@@ -403,6 +417,7 @@ function Alecto(){
     this.setBannerInfo = setBannerInfo;
     this.setBannerProg = setBannerProg;
     this.setBannerInfoX = setBannerInfoX;
+    this.formatEllipsis = formatEllipsis;
 
     //Attributes
     this.attr = {
@@ -420,6 +435,7 @@ function Alecto(){
         loadComments:"正在加载评论",
         starts:"任务正在开始",
         download:"正在下载资源",
+        downloaded:"已下载",
         bundle:"正在打包文件",
         alldone:"已完成抓取任务，检查浏览器下载查看结果。",
         runLabel:"启动抓取",
