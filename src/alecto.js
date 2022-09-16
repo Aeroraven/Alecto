@@ -78,11 +78,14 @@ function Alecto(){
     };
 
     const jsonpCallbackInjection = ()=>{
-        window.jsonp_tbcrate_reviews_list  = (x)=>{
+        const w = (x)=>{
             this.attr.jsonpResolved = true;
             this.attr.jsonpContent = x;
             return x;
         };
+        window.jsonp_tbcrate_reviews_list = w;
+        window.jsonp442 = w;
+
     };
 
     const reOverridingNativeMethods = ()=>{
@@ -121,13 +124,16 @@ function Alecto(){
         let destAddr = "";
         htmlHead.forEach((el)=>{
             if('src' in el){
-                let matchDest = /feedRateList.htm/g;
+                let matchDest = this.schemes[this.attr.platform].jsonpFr;
                 if(el.src.match(matchDest)!=null){
                     destAddr = el.src;
                 }
             }
         });
         this.log("Find comment JSONP URI:"+destAddr);
+        if(this.attr.platform == "tmall"){
+            destAddr = destAddr.replace(/callback\=.*$/g,"callback=jsonp442");
+        }
         return destAddr;
     };
 
@@ -139,28 +145,75 @@ function Alecto(){
             this.setBannerProg(20+Math.min(10,curIndex)/20*10);
             this.jsonpCallbackInjection();
             this.setBannerInfo(this.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",false);
-            let rpUri = uri.replace(/currentPageNum.?[0-9]+/,"currentPageNum="+curIndex);
-            let respBody = await this.jsonpInjection(rpUri);
-            if(!('comments' in respBody)){
-                this.attr.confirm = false;
-                this.setBannerInfo(this.lang.captchaRej,false);
-                await new Promise((resolve)=>{
-                    setInterval(()=>{
-                        if(this.attr.confirm){
-                            resolve();
-                        }
-                    },1000);
+            if(this.attr.platform == "taobao"){
+                let rpUri = uri.replace(/currentPageNum.?[0-9]+/,"currentPageNum="+curIndex);
+                let respBody = await this.jsonpInjection(rpUri);
+                if(!('comments' in respBody)){
+                    this.attr.confirm = false;
+                    this.setBannerInfo(this.lang.captchaRej,false);
+                    await new Promise((resolve)=>{
+                        setInterval(()=>{
+                            if(this.attr.confirm){
+                                resolve();
+                            }
+                        },1000);
+                    });
+                    continue;
+                }
+                if(respBody.comments.length == 0){
+                    break;
+                }
+                
+                let content = respBody.comments;
+                content.forEach((el)=>{
+                    if(el.video!=null){
+                        el.video = [el.video];
+                    }else{
+                        el.video = [];
+                    }
+                    
                 });
-                continue;
+                commentLists = commentLists.concat(content);
+                if(respBody.currentPageNum==respBody.maxPage){
+                    break;
+                }
+            }else{
+                let rpUri = uri.replace(/currentPage.?[0-9]+/,"currentPage="+curIndex);
+                let respBody = await this.jsonpInjection(rpUri);
+                if(!('rateDetail' in respBody)){
+                    this.attr.confirm = false;
+                    this.setBannerInfo(this.lang.captchaRej,false);
+                    await new Promise((resolve)=>{
+                        setInterval(()=>{
+                            if(this.attr.confirm){
+                                resolve();
+                            }
+                        },1000);
+                    });
+                    continue;
+                }
+                if(respBody.rateDetail.rateList.length == 0){
+                    break;
+                }
+                let content = respBody.rateDetail.rateList;
+                content.forEach((el)=>{
+                    el.photos = [];
+                    el.pics.forEach((elx)=>{
+                        el.photos.push({
+                            url:elx
+                        });
+                    });
+                    el.video = el.videoList;
+                    el.user = {
+                        nick:el.displayUserNick
+                    };
+                    el.date = el.rateDate;
+                    el.content  = el.rateContent; 
+                });
+                commentLists = commentLists.concat(content);
             }
-            if(respBody.comments.length == 0){
-                break;
-            }
-            if(respBody.currentPageNum==respBody.maxPage){
-                break;
-            }
-            let content = respBody.comments;
-            commentLists = commentLists.concat(content);
+            
+            
             curIndex++;
             await new Promise((r)=>{
                 setTimeout(()=>{
@@ -185,10 +238,11 @@ function Alecto(){
                 return tw;
             })();
             exportedObject.video = (()=>{
-                if(el.video != null){
-                    return el.video.cloudVideoUrl;
-                }
-                return null;
+                let tw = [];
+                el.video.forEach((elx)=>{
+                    tw.push(elx.cloudVideoUrl);
+                });
+                return tw;
             })();
             exportedObject.content = el.content;
             exportedObject.user = el.user.nick;
@@ -198,9 +252,12 @@ function Alecto(){
     };
     
     const resolveDependencies = async ()=>{
+        let xs = window.define;
+        window.define = undefined;
         let dependencies = [
-            'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.js',
-            'https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.js'
+            'https://cdn.bootcdn.net/ajax/libs/jszip/3.10.1/jszip.min.js',
+            'https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.js',
+            'https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
         ];
         for(let i=0;i<dependencies.length;i++){
             let x = await this.xhrGet(dependencies[i]);
@@ -209,6 +266,46 @@ function Alecto(){
             this.log("Resolved dependency:"+dependencies[i]);
         }
         this.log("All dependencies are loaded.");
+        window.define = xs;
+    };
+
+    const captureSnapshots = async (zip)=>{
+        let nextBtn = document.getElementsByClassName("pg-next");
+        if(nextBtn.length!=0){
+            nextBtn = nextBtn[0];
+        }else{
+            nextBtn = null;
+        }
+        let index = 0;
+        let folder = zip.folder("Snapshots");
+        while(true){
+            nextBtn = document.getElementsByClassName("pg-next");
+            if(nextBtn.length!=0){
+                nextBtn = nextBtn[0];
+            }else{
+                nextBtn = null;
+            }
+            this.setBannerInfo(this.lang.snapshot+" (Page:"+index+")",false);
+            this.setBannerProg(80+1*Math.min(index,10));
+            let canv = await html2canvas(document.getElementsByClassName("tb-revbd")[0]);
+            let b64 = canv.toDataURL('image/png', 1.0).replace(/^data:image\/(png|jpg);base64,/, "");
+            folder.file(index+".jpg",b64,{base64:true});
+            if(nextBtn == null){
+                break;
+            }
+            if(nextBtn.classList.length==2){
+                break;
+            }
+            
+            nextBtn.click();
+            await new Promise((r)=>{
+                setTimeout(()=>{
+                    r();
+                },2000);
+            });
+            index++;
+        }
+        folder.file("note.txt",this.lang.cors);
     };
 
     const createZip = async (analyzedResult,abstractImgs)=>{
@@ -230,7 +327,7 @@ function Alecto(){
             folder.file(i+".jpg",x);
         }
         for(let i=0;i<analyzedResult.length;i++){
-            this.setBannerProg(40+50*(i/analyzedResult.length));
+            this.setBannerProg(40+40*(i/analyzedResult.length));
             this.log("Gathering resource, at index:"+i+" / "+analyzedResult.length);
             let el = analyzedResult[i];
             let prefix = "Textonly";
@@ -253,16 +350,24 @@ function Alecto(){
                 });
                 folder.file(j+".jpg",x);
             }
-            if(el.video!=null){
-                this.setBannerInfo(this.lang.download+" ("+i+" / "+analyzedResult.length+", "+this.lang.downloaded+":"+ parseInt(size/1024/1024) +"MB ):"+this.formatEllipsis(el.video.replace(/\/\//g,"")),false);
-                this.log("Fetching video resource:"+el.video);
-                let x = await this.xhrGet("https:"+el.video,true);
+            for(let j=0;j<el.video.length;j++){
+                this.setBannerInfo(this.lang.download+" ("+i+" / "+analyzedResult.length+", "+this.lang.downloaded+":"+ parseInt(size/1024/1024) +"MB ):"+this.formatEllipsis(el.video[j].replace(/\/\//g,"")),false);
+                this.log("Fetching video resource:"+el.video[j].replace(/\/\//g,""));
+                let x = await this.xhrGet("https:"+el.video[j],true);
                 size+=x.size;
-                folder.file("attachment.mp4",x);
+                await new Promise((r)=>{
+                    setTimeout(()=>{
+                        r();
+                    },100);
+                });
+                folder.file(j+".mp4",x);
             }
             folder.file("comment.txt",el.content);
         }
-
+        this.setBannerProg(80);
+        if(this.attr.platform == "taobao"){
+            await this.captureSnapshots(zip);
+        }
 
         this.setBannerProg(95);
         this.setBannerInfo(this.lang.bundle,false);
@@ -273,6 +378,7 @@ function Alecto(){
     
     const run = async ()=>{
         try {
+            this.detectPlatform();
             this.setBannerInfo(this.lang.starts,false);
             await this.resolveDependencies();
             this.setBannerProg(10);
@@ -284,7 +390,7 @@ function Alecto(){
             await new Promise((r)=>{
                 setTimeout(()=>{
                     r();
-                },2000);
+                },4000);
             });
             this.setBannerProg(20);
             this.log("Comments are loaded");
@@ -316,12 +422,22 @@ function Alecto(){
     };
 
     const simStartup = ()=>{
-        let btns = document.getElementsByClassName('tb-tab-anchor');
-        for(let i=0;i<btns.length;i++){
-            if(btns[i].innerHTML.match(/\&nbsp;\&nbsp;/g)!=null){
-                btns[i].click();
+        if(this.attr.platform == "taobao"){
+            let btns = document.getElementsByClassName('tb-tab-anchor');
+            for(let i=0;i<btns.length;i++){
+                if(btns[i].innerHTML.match(/\&nbsp;\&nbsp;/g)!=null){
+                    btns[i].click();
+                }
+            }
+        }else{
+            let btns = document.getElementsByTagName('a');
+            for(let i=0;i<btns.length;i++){
+                if(btns[i].innerHTML.match(/评\&nbsp;\&nbsp;价/g)!=null){
+                    btns[i].click();
+                }
             }
         }
+        
     };
 
     const setupBanner = ()=>{
@@ -378,7 +494,12 @@ function Alecto(){
 
     const detectAbstracts = ()=>{
         let rets = [];
-        let w = document.getElementById("J_DivItemDesc").childNodes[0].childNodes;
+        let w = null;
+        if(this.attr.platform == "taobao"){
+            w = document.getElementById("J_DivItemDesc").childNodes[0].childNodes;
+        }else{
+            w = document.getElementsByClassName("ke-post")[0].childNodes[1].childNodes;
+        }
         for(let i=0;i<w.length;i++){
             if(w[i].localName == 'img'){
                 if('data-ks-lazyload' in w[i].attributes){
@@ -464,10 +585,18 @@ function Alecto(){
 
         inj += "<span class='alecto-right'>";
         inj += `  <a class="alecto-btn" id='alecto-btn-a' href='javascript:void(0)' onclick='window.alecto.run()'>`+this.lang.runLabel+`</a>`;
-        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1d. Repo:https://github.com/Aeroraven/Alecto");window.alecto.confirm()'>`+this.lang.about+`</a>`;
+        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1e. Repo:https://github.com/Aeroraven/Alecto");window.alecto.confirm()'>`+this.lang.about+`</a>`;
         inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='window.alecto.setLang("en")'>English</a>`;
         inj += "</span>";
         w.innerHTML = inj;
+    };
+
+    const detectPlatform = ()=>{
+        if(window.location.host.match(/\.tmall\.com$/g)){
+            this.attr.platform = "tmall";
+        }else{
+            this.attr.platform = "taobao";
+        }
     };
 
 
@@ -495,6 +624,8 @@ function Alecto(){
     this.setLang = setLang;
     this.confirm = confirm;
     this.detectAbstracts = detectAbstracts;
+    this.detectPlatform = detectPlatform;
+    this.captureSnapshots  = captureSnapshots;
 
     //Attributes
     this.attr = {
@@ -503,6 +634,7 @@ function Alecto(){
         bannerObj:null,
         bannerProg: 0,
         confirm:true,
+        platform:"none"
     };
     
     this.zh_langs = {
@@ -521,7 +653,9 @@ function Alecto(){
         error:"发生错误，按下F12后选择控制台选项卡查看错误信息",
         langChanged:"已将语言调整为 简体中文(Simplified Chinese)",
         captchaRej:"需要完成验证码后继续。在评论页面中随机选择一页，后进行验证。验证完毕点击“版本信息”按钮确认。",
-        abstractImage:"获取介绍图片"
+        abstractImage:"获取介绍图片",
+        snapshot:"正在截取评论，页面可能有跳动现象",
+        cors:"由于跨域(CORS)限制，所有的图片无法正常截取。但是该功能仍然能够实现，但相对复杂。"
     };
 
     this.en_langs = {
@@ -543,6 +677,15 @@ function Alecto(){
 
     this.lang = this.zh_langs;
     this.assets = new AlectoAssets();
+
+    this.schemes = {
+        taobao:{
+            jsonpFr:/feedRateList.htm/g
+        },
+        tmall:{
+            jsonpFr:/list_detail_rate.htm/g
+        }
+    }
 }
 
 //Injecting
