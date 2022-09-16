@@ -136,11 +136,24 @@ function Alecto(){
         let commentLists = [];
         let curIndex = 1;
         while(true){
+            this.setBannerProg(20+Math.min(10,curIndex)/20*10);
             this.jsonpCallbackInjection();
             this.setBannerInfo(this.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",false);
             let rpUri = uri.replace(/currentPageNum.?[0-9]+/,"currentPageNum="+curIndex);
             let respBody = await this.jsonpInjection(rpUri);
-            if(!('comments' in respBody)||respBody.comments.length == 0){
+            if(!('comments' in respBody)){
+                this.attr.confirm = false;
+                this.setBannerInfo(this.lang.captchaRej,false);
+                await new Promise((resolve)=>{
+                    setInterval(()=>{
+                        if(this.attr.confirm){
+                            resolve();
+                        }
+                    },1000);
+                });
+                continue;
+            }
+            if(respBody.comments.length == 0){
                 break;
             }
             if(respBody.currentPageNum==respBody.maxPage){
@@ -155,7 +168,7 @@ function Alecto(){
                 },2000);
             });
         }
-        
+        this.setBannerProg(30);
         return commentLists;
     };
 
@@ -203,10 +216,16 @@ function Alecto(){
         let idx = 0;
         let size = 0;
         for(let i=0;i<analyzedResult.length;i++){
-            this.setBannerProg(40+40*(i/analyzedResult.length));
+            this.setBannerProg(30+60*(i/analyzedResult.length));
             this.log("Gathering resource, at index:"+i+" / "+analyzedResult.length);
             let el = analyzedResult[i];
-            let folder = zip.folder(el.date+"-"+el.user);
+            let prefix = "Textonly";
+            if(el.photos.length==0&&el.video==null){
+                prefix = "Textonly";
+            }else{
+                prefix = "Multimedia";
+            }
+            let folder = zip.folder(prefix+"-"+el.date+"-"+el.user);
             
             for(let j=0;j<el.photos.length;j++){
                 this.setBannerInfo(this.lang.download+" ("+i+" / "+analyzedResult.length+", "+this.lang.downloaded+":"+ parseInt(size/1024/1024) +"MB ):"+this.formatEllipsis(el.photos[j].replace(/\/\//g,"")),false);
@@ -216,7 +235,7 @@ function Alecto(){
                 await new Promise((r)=>{
                     setTimeout(()=>{
                         r();
-                    },200);
+                    },100);
                 });
                 folder.file(j+".jpg",x);
             }
@@ -229,17 +248,18 @@ function Alecto(){
             }
             folder.file("comment.txt",el.content);
         }
-        this.setBannerProg(80);
+        this.setBannerProg(95);
         this.setBannerInfo(this.lang.bundle,false);
         let content = await zip.generateAsync({type:"blob"});
-        saveAs(content, "example.zip");
+        let data = document.getElementsByTagName("title")[0].innerHTML
+        saveAs(content, data+".zip");
     };
     
     const run = async ()=>{
         try {
             this.setBannerInfo(this.lang.starts,false);
             await this.resolveDependencies();
-            this.setBannerProg(20);
+            this.setBannerProg(10);
             this.setBannerInfo(this.lang.loadComments,false);
             this.log("Loading comments");
             this.simStartup();
@@ -248,7 +268,7 @@ function Alecto(){
                     r();
                 },2000);
             });
-            this.setBannerProg(40);
+            this.setBannerProg(20);
             this.log("Comments are loaded");
             let commentObject = await findJsonpBody();
             let analyzedResult = this.analyzeComments(commentObject);
@@ -333,6 +353,10 @@ function Alecto(){
         this.setBannerInfo(this.lang.langChanged,"def");
     };
 
+    const confirm = ()=>{
+        this.attr.confirm = true;  
+    };
+
     const setBannerInfoX = (x,showBtn)=>{
         let w = this.attr.bannerObj;
         let styleInject = `
@@ -385,7 +409,7 @@ function Alecto(){
                     position:fixed;
                     left:0px;
                     top:0px;
-                    transition:all 0.5s;
+                    transition:all 1s;
                 }
             </style>
             <div class='alecto-progressbar' id='alecto-progressbar' style='width:`+this.attr.bannerProg+`%;'>
@@ -405,7 +429,7 @@ function Alecto(){
 
         inj += "<span class='alecto-right'>";
         inj += `  <a class="alecto-btn" id='alecto-btn-a' href='javascript:void(0)' onclick='window.alecto.run()'>`+this.lang.runLabel+`</a>`;
-        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1b. Repo:https://github.com/Aeroraven/Alecto")'>`+this.lang.about+`</a>`;
+        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1c. Repo:https://github.com/Aeroraven/Alecto");window.alecto.confirm()'>`+this.lang.about+`</a>`;
         inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='window.alecto.setLang("en")'>English</a>`;
         inj += "</span>";
         w.innerHTML = inj;
@@ -434,13 +458,15 @@ function Alecto(){
     this.setBannerInfoX = setBannerInfoX;
     this.formatEllipsis = formatEllipsis;
     this.setLang = setLang;
+    this.confirm = confirm;
 
     //Attributes
     this.attr = {
         jsonpResolved:false,
         jsonpContent:"",
         bannerObj:null,
-        bannerProg: 0
+        bannerProg: 0,
+        confirm:true,
     };
     
     this.zh_langs = {
@@ -457,7 +483,8 @@ function Alecto(){
         runLabel:"启动抓取",
         about:"版本信息",
         error:"发生错误，按下F12后选择控制台选项卡查看错误信息",
-        langChanged:"已将语言调整为 简体中文(Simplified Chinese)"
+        langChanged:"已将语言调整为 简体中文(Simplified Chinese)",
+        captchaRej:"需要完成验证码后继续。在评论页面中随机选择一页，后进行验证。验证完毕点击“版本信息”按钮确认。"
     };
 
     this.en_langs = {
