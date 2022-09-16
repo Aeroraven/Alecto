@@ -138,9 +138,12 @@ function Alecto(){
         while(true){
             this.jsonpCallbackInjection();
             this.setBannerInfo(this.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",false);
-            let rpUri = uri.replace(/currentPageNum?[0-9]+/,"currentPageNum="+curIndex);
+            let rpUri = uri.replace(/currentPageNum.?[0-9]+/,"currentPageNum="+curIndex);
             let respBody = await this.jsonpInjection(rpUri);
             if(!('comments' in respBody)||respBody.comments.length == 0){
+                break;
+            }
+            if(respBody.currentPageNum==respBody.maxPage){
                 break;
             }
             let content = respBody.comments;
@@ -249,6 +252,7 @@ function Alecto(){
             this.log("Comments are loaded");
             let commentObject = await findJsonpBody();
             let analyzedResult = this.analyzeComments(commentObject);
+            console.log(commentObject)
             this.log("Analysis is done.");
             console.log(analyzedResult);
             await this.createZip(analyzedResult);
@@ -311,12 +315,24 @@ function Alecto(){
     };
     const setBannerInfo = (x,showBtn)=>{
         document.getElementById("alecto-body").innerHTML = x;
+        if(showBtn==="def"){
+            return;
+        }
         if(showBtn){
             document.getElementById("alecto-btn-a").style.display = "inline";
         }else{
             document.getElementById("alecto-btn-a").style.display = "none";
         }
     };
+
+    const setLang = (x)=>{
+        if(x=="en"){
+            this.lang = this.en_langs;
+        }
+        this.setBannerInfoX(this.lang.langChanged,true);
+        this.setBannerInfo(this.lang.langChanged,"def");
+    };
+
     const setBannerInfoX = (x,showBtn)=>{
         let w = this.attr.bannerObj;
         let styleInject = `
@@ -388,10 +404,9 @@ function Alecto(){
         `+x+`</span>`;
 
         inj += "<span class='alecto-right'>";
-        if(true){
-            inj += `  <a class="alecto-btn" id='alecto-btn-a' href='javascript:void(0)' onclick='window.alecto.run()'>`+this.lang.runLabel+`</a>`;
-        }
+        inj += `  <a class="alecto-btn" id='alecto-btn-a' href='javascript:void(0)' onclick='window.alecto.run()'>`+this.lang.runLabel+`</a>`;
         inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1b. Repo:https://github.com/Aeroraven/Alecto")'>`+this.lang.about+`</a>`;
+        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='window.alecto.setLang("en")'>English</a>`;
         inj += "</span>";
         w.innerHTML = inj;
     };
@@ -418,6 +433,7 @@ function Alecto(){
     this.setBannerProg = setBannerProg;
     this.setBannerInfoX = setBannerInfoX;
     this.formatEllipsis = formatEllipsis;
+    this.setLang = setLang;
 
     //Attributes
     this.attr = {
@@ -440,7 +456,25 @@ function Alecto(){
         alldone:"已完成抓取任务，检查浏览器下载查看结果。",
         runLabel:"启动抓取",
         about:"版本信息",
-        error:"发生错误，按下F12后选择控制台选项卡查看错误信息"
+        error:"发生错误，按下F12后选择控制台选项卡查看错误信息",
+        langChanged:"已将语言调整为 简体中文(Simplified Chinese)"
+    };
+
+    this.en_langs = {
+        startup:"Initializing",
+        reoverride:"Recovering native JavaScript methods",
+        initdone:"Alecto is ready. Click `Start` to initiate the task",
+        loadDeps:"Loading dependencies",
+        loadComments:"Loading comments",
+        starts:"Now starting",
+        download:"Downloading resources",
+        downloaded:"Downloaded",
+        bundle:"Now packing bundles",
+        alldone:"The task has been finished. Check your browser to find the final file.",
+        runLabel:"Start",
+        about:"About",
+        error:"Error occurs, press F12 to get technical report.",
+        langChanged:"Language has been changed succesfully!",
     };
 
     this.lang = this.zh_langs;
