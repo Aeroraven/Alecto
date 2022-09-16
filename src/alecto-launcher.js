@@ -26,6 +26,7 @@
         window.fetch = _frame.contentWindow.fetch;
         _frame.style.display = "none";
         var srcMirrors = [
+            'https://www.ugcoopaint.com/alecto-dist.js',
             'https://raw.githubusercontent.com/Aeroraven/Alecto/main/src/alecto.js',
             'https://localhost:3000/alecto.js',
         ];
