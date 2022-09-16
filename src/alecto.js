@@ -170,7 +170,7 @@ function Alecto(){
             let folder = zip.folder(el.date+"-"+el.user);
             
             for(let j=0;j<el.photos.length;j++){
-                this.setBannerInfo(this.lang.download+"("+i+" / "+analyzedResult.length+"):"+el.photos[j],false);
+                this.setBannerInfo(this.lang.download+" ("+i+" / "+analyzedResult.length+"):"+el.photos[j],false);
                 this.log("Fetching image resource:"+el.photos[j]);
                 let x = await this.xhrGet("https:"+el.photos[j],true);
                 await new Promise((r)=>{
@@ -240,23 +240,78 @@ function Alecto(){
         w.style.width = "100%";
         w.style.zIndex = "114514191"; //?
         w.innerHTML = this.lang.startup;
-        w.style.height = "30px";
-        w.style.backgroundColor = "#ff9900";
-        w.style.color = "#000000";
+        w.style.height = "40px";
+        w.style.backgroundColor = "#0b0b0b";
+        w.style.color = "#e3e3e3";
         w.style.fontWeight = "bold";
-        w.style.paddingLeft = "20px";
+        w.style.paddingLeft = "25px";
         w.style.paddingTop = "10px";
-        w.style.fontSize = "18px";
+        w.style.paddingBottom = "10px";
+        w.style.fontSize = "15px";
+        w.style.fontFamily = "'Microsoft YaHei',Tahoma,Helvetica,Arial,'宋体',sans-serif";
+        w.style.borderBottom = "2px solid #232323";
+        w.style.verticalAlign = "top";
+        w.style.display = "table-cell";
+        w.style.userSelect = "none";
         document.body.appendChild(w);
         this.attr.bannerObj = w;
     };
 
     const setBannerInfo = (x,showBtn)=>{
         let w = this.attr.bannerObj;
-        w.innerHTML = x;
+        let styleInject = `
+            <style>
+                .alecto-btn{
+                    background-color:#76ddff;
+                    color:#000000;
+                    border-radius:3px;
+                    padding-left:11px;
+                    padding-top:6px;
+                    padding-right:11px;
+                    padding-bottom:6px;
+                    margin-left:12px;
+                }
+                .alecto-btn:hover{
+                    text-decoration:none;
+                }
+                .alecto-right{
+                    float:right;
+                    margin-right:60px;
+                    padding-top:10px;
+                }
+                .alecto-title{
+                    font-size:25px;
+                    font-weight:bold;
+                    padding-top:2px;
+                    display:inline-block;
+                    margin-right:15px;
+                    color:#10b2ff;
+                    
+                }
+                .alecto-body{
+                    display:inline-block;
+                    transform: translateY(-3px);
+                }
+            </style>
+        `;
+        let inj = "";
+        
+        inj += `
+            <span class='alecto-title'>Alecto</span>
+        `;
+        inj += styleInject;
+
+        inj += `
+            <span class='alecto-body'>
+        `+x+`</span>`;
+
+        inj += "<span class='alecto-right'>";
         if(showBtn){
-            w.innerHTML += `  <a href='javascript:void(0)' onclick='window.alecto.run()'>`+this.lang.runLabel+`</a>`;
+            inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='window.alecto.run()'>`+this.lang.runLabel+`</a>`;
         }
+        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1. Repo:https://github.com/Aeroraven/Alecto")'>`+this.lang.about+`</a>`;
+        inj += "</span>";
+        w.innerHTML = inj;
     };
 
 
@@ -287,16 +342,17 @@ function Alecto(){
     };
     
     this.zh_langs = {
-        startup:"Alecto 正在初始化",
-        reoverride:"Alecto 正在重载原生方法",
-        initdone:"Alecto 初始化完毕 (v0.1 by Aeroraven)",
-        loadDeps:"Alecto 正在加载依赖",
-        loadComments:"Alecto 正在加载评论",
-        starts:"Alecto 任务正在开始",
-        download:"Alecto 正在下载资源",
-        bundle:"Alecto 正在打包文件",
-        alldone:"Alecto 已完成抓取任务，检查浏览器下载查看结果。",
-        runLabel:"[点击此处开始抓取]"
+        startup:"脚本正在初始化",
+        reoverride:"正在重载原生方法",
+        initdone:"已就绪，选择启动抓取开始任务",
+        loadDeps:"正在加载依赖",
+        loadComments:"正在加载评论",
+        starts:"任务正在开始",
+        download:"正在下载资源",
+        bundle:"正在打包文件",
+        alldone:"已完成抓取任务，检查浏览器下载查看结果。",
+        runLabel:"启动抓取",
+        about:"版本信息"
     };
 
     this.lang = this.zh_langs;
