@@ -23,6 +23,8 @@ A user-script to gather data for sellers on some e-shopping platforms
 
 
 
+
+
 ### # 安装 / Installation
 
 下列两种方法选择其一：
@@ -33,9 +35,13 @@ A user-script to gather data for sellers on some e-shopping platforms
 
 
 
+
+
 ### # 运行 / Run
 
 完成安装后，点击安装步骤中完成的收藏夹项目。
+
+
 
 
 
@@ -53,6 +59,8 @@ A user-script to gather data for sellers on some e-shopping platforms
 2. 安装Git，完成后，在命令行/终端中执行`git clone https://github.com/Aeroraven/Alecto.git `
 3. 在第二步得到的文件夹中，在`src`子文件夹下开启命令行/终端，执行`serve`，保证`3000`端口可用。
 4. 完成后，重新按照运行小节操作。
+
+
 
 
 

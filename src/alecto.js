@@ -215,7 +215,7 @@ function Alecto(){
         this.log("Process is done.");
     };
 
-    const init = ()=>{
+    const init = (inTamperMonkey = false)=>{
         this.setupBanner();
         this.setBannerInfo(this.lang.reoverride,false);
         this.reOverridingNativeMethods();

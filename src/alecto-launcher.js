@@ -20,7 +20,7 @@
         document.body.appendChild(_frame);
         window.fetch = _frame.contentWindow.fetch;
         var srcMirrors = [
-            'https://raw.githubusercontent.com/Aeroraven/Alecto/main/alecto.js',
+            'https://raw.githubusercontent.com/Aeroraven/Alecto/main/src/alecto.js',
             'https://aeroraven.github.io/alecto/alecto.js',
             'https://localhost:3000/alecto.js',
         ];
