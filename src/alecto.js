@@ -122,8 +122,26 @@ function Alecto(){
 
     const findJsonpBody = async ()=>{
         let uri = this.locateJsonpAddress();
-        this.jsonpCallbackInjection();
-        let content = await this.jsonpInjection(uri);
+        let commentLists = [];
+        let curIndex = 1;
+        while(true){
+            this.jsonpCallbackInjection();
+            this.setBannerInfo(this.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",false);
+            let rpUri = uri.replace(/currentPageNum?[0-9]+/,"currentPageNum="+curIndex);
+            let respBody = await this.jsonpInjection(rpUri);
+            if(!('comments' in respBody)||respBody.comments.length == 0){
+                break;
+            }
+            let content = respBody.comments;
+            commentLists = commentLists.concat(content);
+            curIndex++;
+            await new Promise((r)=>{
+                setTimeout(()=>{
+                    r();
+                },1000);
+            });
+        }
+        
         return content;
     };
 
@@ -182,7 +200,7 @@ function Alecto(){
                 await new Promise((r)=>{
                     setTimeout(()=>{
                         r();
-                    },100);
+                    },200);
                 });
                 folder.file(j+".jpg",x);
             }
@@ -201,27 +219,34 @@ function Alecto(){
     };
     
     const run = async ()=>{
-        this.setBannerInfo(this.lang.starts,false);
-        await this.resolveDependencies();
-        this.setBannerProg(20);
-        this.setBannerInfo(this.lang.loadComments,false);
-        this.log("Loading comments");
-        this.simStartup();
-        await new Promise((r)=>{
-            setTimeout(()=>{
-                r();
-            },2000);
-        });
-        this.setBannerProg(40);
-        this.log("Comments are loaded");
-        let commentObject = await findJsonpBody();
-        let analyzedResult = this.analyzeComments(commentObject.comments);
-        this.log("Analysis is done.");
-        console.log(analyzedResult);
-        await this.createZip(analyzedResult);
-        this.setBannerInfo(this.lang.alldone,true);
-        this.log("Process is done.");
-        this.setBannerProg(100);
+        try {
+            this.setBannerInfo(this.lang.starts,false);
+            await this.resolveDependencies();
+            this.setBannerProg(20);
+            this.setBannerInfo(this.lang.loadComments,false);
+            this.log("Loading comments");
+            this.simStartup();
+            await new Promise((r)=>{
+                setTimeout(()=>{
+                    r();
+                },2000);
+            });
+            this.setBannerProg(40);
+            this.log("Comments are loaded");
+            let commentObject = await findJsonpBody();
+            let analyzedResult = this.analyzeComments(commentObject);
+            this.log("Analysis is done.");
+            console.log(analyzedResult);
+            await this.createZip(analyzedResult);
+            this.setBannerInfo(this.lang.alldone,true);
+            this.log("Process is done.");
+            this.setBannerProg(100);
+        } catch (error) {
+            this.setBannerInfo(this.lang.error,true);
+            this.log("ERROR OCCURS");
+            console.log(error);
+        }
+        
     };
 
     const init = (inTamperMonkey = false)=>{
@@ -398,7 +423,8 @@ function Alecto(){
         bundle:"正在打包文件",
         alldone:"已完成抓取任务，检查浏览器下载查看结果。",
         runLabel:"启动抓取",
-        about:"版本信息"
+        about:"版本信息",
+        error:"发生错误，按下F12后选择控制台选项卡查看错误信息"
     };
 
     this.lang = this.zh_langs;
