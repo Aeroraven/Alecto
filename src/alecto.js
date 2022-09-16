@@ -211,12 +211,26 @@ function Alecto(){
         this.log("All dependencies are loaded.");
     };
 
-    const createZip = async (analyzedResult)=>{
+    const createZip = async (analyzedResult,abstractImgs)=>{
         var zip = new JSZip();
         let idx = 0;
         let size = 0;
+        this.setBannerProg(30);
+        for(let i=0;i<abstractImgs.length;i++){
+            this.setBannerProg(30+10*i/abstractImgs.length);
+            this.setBannerInfo(this.lang.abstractImage+" ("+i+"/"+abstractImgs.length+")",false);
+            let folder = zip.folder("Showcase-Abstract");
+            let x = await this.xhrGet(abstractImgs[i],true);
+            await new Promise((r)=>{
+                setTimeout(()=>{
+                    r();
+                },100);
+            });
+            size+=x.size;
+            folder.file(i+".jpg",x);
+        }
         for(let i=0;i<analyzedResult.length;i++){
-            this.setBannerProg(30+60*(i/analyzedResult.length));
+            this.setBannerProg(40+50*(i/analyzedResult.length));
             this.log("Gathering resource, at index:"+i+" / "+analyzedResult.length);
             let el = analyzedResult[i];
             let prefix = "Textonly";
@@ -248,6 +262,8 @@ function Alecto(){
             }
             folder.file("comment.txt",el.content);
         }
+
+
         this.setBannerProg(95);
         this.setBannerInfo(this.lang.bundle,false);
         let content = await zip.generateAsync({type:"blob"});
@@ -260,6 +276,8 @@ function Alecto(){
             this.setBannerInfo(this.lang.starts,false);
             await this.resolveDependencies();
             this.setBannerProg(10);
+            let abstractImgs = this.detectAbstracts();
+            this.setBannerProg(15);
             this.setBannerInfo(this.lang.loadComments,false);
             this.log("Loading comments");
             this.simStartup();
@@ -272,10 +290,11 @@ function Alecto(){
             this.log("Comments are loaded");
             let commentObject = await findJsonpBody();
             let analyzedResult = this.analyzeComments(commentObject);
-            console.log(commentObject)
+            console.log(commentObject);
             this.log("Analysis is done.");
+           
             console.log(analyzedResult);
-            await this.createZip(analyzedResult);
+            await this.createZip(analyzedResult,abstractImgs);
             this.setBannerInfo(this.lang.alldone,true);
             this.log("Process is done.");
             this.setBannerProg(100);
@@ -357,6 +376,22 @@ function Alecto(){
         this.attr.confirm = true;  
     };
 
+    const detectAbstracts = ()=>{
+        let rets = [];
+        let w = document.getElementById("J_DivItemDesc").childNodes[0].childNodes;
+        for(let i=0;i<w.length;i++){
+            if(w[i].localName == 'img'){
+                if('data-ks-lazyload' in w[i].attributes){
+                    rets.push(w[i].attributes['data-ks-lazyload'].value);
+                }else{
+                    rets.push(w[i].attributes.src.value);
+                }
+            }
+        }
+        console.log(rets);
+        return rets;
+    }
+
     const setBannerInfoX = (x,showBtn)=>{
         let w = this.attr.bannerObj;
         let styleInject = `
@@ -429,7 +464,7 @@ function Alecto(){
 
         inj += "<span class='alecto-right'>";
         inj += `  <a class="alecto-btn" id='alecto-btn-a' href='javascript:void(0)' onclick='window.alecto.run()'>`+this.lang.runLabel+`</a>`;
-        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1c. Repo:https://github.com/Aeroraven/Alecto");window.alecto.confirm()'>`+this.lang.about+`</a>`;
+        inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version v0.1d. Repo:https://github.com/Aeroraven/Alecto");window.alecto.confirm()'>`+this.lang.about+`</a>`;
         inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='window.alecto.setLang("en")'>English</a>`;
         inj += "</span>";
         w.innerHTML = inj;
@@ -459,6 +494,7 @@ function Alecto(){
     this.formatEllipsis = formatEllipsis;
     this.setLang = setLang;
     this.confirm = confirm;
+    this.detectAbstracts = detectAbstracts;
 
     //Attributes
     this.attr = {
@@ -484,7 +520,8 @@ function Alecto(){
         about:"版本信息",
         error:"发生错误，按下F12后选择控制台选项卡查看错误信息",
         langChanged:"已将语言调整为 简体中文(Simplified Chinese)",
-        captchaRej:"需要完成验证码后继续。在评论页面中随机选择一页，后进行验证。验证完毕点击“版本信息”按钮确认。"
+        captchaRej:"需要完成验证码后继续。在评论页面中随机选择一页，后进行验证。验证完毕点击“版本信息”按钮确认。",
+        abstractImage:"获取介绍图片"
     };
 
     this.en_langs = {
