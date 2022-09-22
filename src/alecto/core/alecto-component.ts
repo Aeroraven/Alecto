@@ -15,11 +15,14 @@ export class AlectoComponent{
         this.children = []
     }
 
-    public async execute(){
+    public async execute(childOnly:boolean = false){
         for(let i=0;i<this.children.length;i++){
             await this.children[i].execute();
         }
-        await this.executeSelf()
+        if(!childOnly){
+            await this.executeSelf()
+        }
+        
     }
 
     public async executeSelf(){

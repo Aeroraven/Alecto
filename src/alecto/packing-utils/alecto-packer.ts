@@ -7,14 +7,21 @@ import { AlectoProgressCallback } from '../core/alecto-progress-callback';
 import { AlectoGlobal } from '../core/alecto-global';
 
 export class AlectoPacker extends AlectoComponent{
+    zip:JSZip
+    constructor(){
+        super()
+        this.zip = new JSZip();
+    }
+    public getZip(){
+        return this.zip;
+    }
     public async createZip(analyzedResult:AlectoAnalyzedCommentFormat[],abstractImgs: string[]){
-        let zip = new JSZip();
         let idx = 0;
         let size = 0;
         let g = AlectoGlobal.getInst();
 
         for(let i=0;i<abstractImgs.length;i++){
-            let folder = zip.folder("Showcase-Abstract");
+            let folder = this.zip.folder("Showcase-Abstract");
             //Callback
             let cb:AlectoProgressCallback = {
                 status: g.lang.abstractImage+" ("+i+"/"+abstractImgs.length+")",
@@ -37,7 +44,7 @@ export class AlectoPacker extends AlectoComponent{
             }else{
                 prefix = "Multimedia";
             }
-            let folder = zip.folder(prefix+"-"+el.date+"-"+el.user);
+            let folder = this.zip.folder(prefix+"-"+el.date+"-"+el.user);
             const assertValidFolder = (x:typeof folder):x is JSZip =>{
                 if(x==null){
                     return false
@@ -86,8 +93,13 @@ export class AlectoPacker extends AlectoComponent{
         } 
         this.doCallback(cb);
 
-        let content = await zip.generateAsync({type:"blob"});
+        await this.execute(true);
+
+        let content = await this.zip.generateAsync({type:"blob"});
         let data = document.getElementsByTagName("title")[0].innerHTML
+        
         saveAs(content, data+".zip");
     }
+
+
 }

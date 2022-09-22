@@ -19,7 +19,9 @@
   "homepage": "https://github.com/Aeroraven/Alecto#readme",
   "dependencies": {
     "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
     "jszip": "^3.10.1",
+    "pako": "^2.0.4",
     "ts-loader": "^9.3.1",
     "webpack": "^5.74.0"
   },

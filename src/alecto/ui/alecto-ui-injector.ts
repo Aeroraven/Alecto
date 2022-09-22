@@ -68,14 +68,6 @@ export class AlectoUIInjector extends AlectoComponent{
         let styleInject = `
             
             <style>
-                @font-face{
-                    font-family:Geometo;
-                    src:url('`+asset.fontGeometos+`');
-                }
-                @font-face{
-                    font-family:SourceHan;
-                    src:url('`+asset.fontSourceHan+`');
-                }
                 .alecto-btn{
                     background-color:#76ddff;
                     color:#000000;

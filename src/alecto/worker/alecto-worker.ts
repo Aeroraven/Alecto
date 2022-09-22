@@ -1,3 +1,4 @@
+import { pack } from "html2canvas/dist/types/css/types/color";
 import { AlectoCommentAnalyzer } from "../comment-utils/alecto-comment-analyzer";
 import { AlectoCommentHandler } from "../comment-utils/alecto-comment-handler";
 import { AlectoCommentHandlerTaobao } from "../comment-utils/alecto-comment-handler-taobao";
@@ -8,6 +9,8 @@ import { AlectoRuntime } from "../core/alecto-runtime";
 import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
 import { AlectoLang_zhCN } from "../localization/alecto-lang-zh-cn";
 import { AlectoPacker } from "../packing-utils/alecto-packer";
+import { AlectoSnapshotComponentTaobao } from "../snapshot-utils/alecto-snapshot-component-taobao";
+import { AlectoUIAboutInjector } from "../ui/alecto-ui-about-injector";
 import { AlectoUIInjector, AlectoUIInjectorSbtn } from "../ui/alecto-ui-injector";
 
 declare global{
@@ -28,6 +31,10 @@ export class AlectoWorker extends AlectoComponent{
         let runtime = new AlectoRuntime();
         let language = AlectoLang_zhCN;
         this.ui = new AlectoUIInjector();
+
+        //Sub UI
+        let sui = new AlectoUIAboutInjector();
+        sui.setup()
 
         //Initialize
         runtime.executeSelf()
@@ -51,6 +58,7 @@ export class AlectoWorker extends AlectoComponent{
         let commentCrawler: AlectoCommentHandler = new AlectoCommentHandlerTaobao();
         let commentAnalyzer: AlectoCommentAnalyzer = new AlectoCommentAnalyzer();
         let packer: AlectoPacker = new AlectoPacker()
+        let snapshotCom = new AlectoSnapshotComponentTaobao();
         
         //Setup callbacks
         commentCrawler.setCallback((x:any)=>{
@@ -78,6 +86,17 @@ export class AlectoWorker extends AlectoComponent{
                 
             }
         })
+        snapshotCom.setCallback((x:any)=>{
+            const tg = (xs:any):xs is AlectoProgressCallback =>{
+                return true;
+            }
+            if(tg(x)){
+                this.ui.setBannerInfo(x.status,AlectoUIInjectorSbtn.AUIS_RETAIN)
+                this.ui.setBannerProg(80+10*x.progress)
+                
+            }
+        })
+        
         try {
             //Start
             this.ui.setBannerInfo(g.lang.starts,AlectoUIInjectorSbtn.AUIS_HIDE);
@@ -97,6 +116,10 @@ export class AlectoWorker extends AlectoComponent{
 
             //Analyze Comments
             let analyzedBody = commentAnalyzer.analyzeComments(respBody);
+
+            //Snapshot Components
+            snapshotCom.setZip(packer.zip)
+            packer.addChild(snapshotCom)
 
             //Packing
             await packer.createZip(analyzedBody,abstracts);

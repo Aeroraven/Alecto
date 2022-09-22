@@ -1,3 +1,5 @@
+import { alectoPakoGzip, alectoPakoUnGzip } from "../../alecto-external/alecto-pako-wrapper/alecto-pako-wrapper-native";
+
 export class AlectoRuntimeUtils{
     public static formatEllipsis(str = '', limitLen = 48){
         let 
@@ -48,5 +50,13 @@ export class AlectoRuntimeUtils{
                 }
             },interval);
         });
+    }
+
+    public static gzip(s:string){
+        return alectoPakoGzip(s);
+    }
+
+    public static ungzip(s:string){
+        return alectoPakoUnGzip(s);
     }
 }

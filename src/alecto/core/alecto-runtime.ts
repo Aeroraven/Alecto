@@ -1,3 +1,4 @@
+import { AlectoAssets } from "../asset/alecto-assets";
 import { AlectoComponent } from "./alecto-component";
 import { AlectoGlobal, AlectoGlobalCodes, AlectoGlobalPlatform } from "./alecto-global";
 
@@ -28,6 +29,7 @@ export class AlectoRuntime extends AlectoComponent{
         let _frame = document.createElement('iframe');
         document.body.appendChild(_frame);
         g.getEnv().fetch  = (<Window>_frame.contentWindow).fetch;
+        _frame.style.display = "none"
     }
 
     private platformDetect(){
@@ -39,9 +41,15 @@ export class AlectoRuntime extends AlectoComponent{
         }
     }
 
+    private emitAssets(){
+        let a = AlectoAssets.getInst()
+        a.generateAssetCSS()
+    }
+
     public async executeSelf(){
         this.initEnv();
         this.recoverNativeMethods();
         this.platformDetect();
+        this.emitAssets()
     }
 }
