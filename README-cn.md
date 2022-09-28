@@ -24,9 +24,16 @@ A user-script to gather data for sellers on some e-shopping platforms
 
 
 
-**1. 使用Tamper Monkey插件**: 按照如下步骤安装
+**1. 使用Tamper Monkey插件**:  该方法仅支持v0.2a及以后的版本
 
-1. 
+1. 请在浏览器上安装Tamper Monkey插件：
+   1. Chrome 安装地址：https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo
+   2. Edge 安装地址：https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd
+2. 安装脚本
+   1. 访问https://github.com/Aeroraven/Alecto
+   2. 在页面右侧找到Releases部分，点击进入Latest版本
+   3. 点击alecto.user.js文件
+   4. 在Tamper Monkey的弹出页面中选择安装或重新安装
 
 
 
@@ -34,13 +41,21 @@ A user-script to gather data for sellers on some e-shopping platforms
 
 
 
+**3. 不安装 (不建议) **: 其实安装步骤是可选的
+
+
+
 ### # 运行 / Run
 
-若使用方法1安装，则脚本将在访问网页时自动运行
+**若使用方法1安装**，则脚本将在访问网页时自动运行
 
-若使用方法2安装，则完成安装后，点击安装步骤中完成的收藏夹项目。
+**若使用方法2安装**，则完成安装后，点击安装步骤中完成的收藏夹项目，但大概率会出现错误。
 
+**若使用方法3安装**，则按下列步骤运行
 
+1. 访问 https://github.com/Aeroraven/Alecto/tree/main/dist/alecto.js，复制所有代码部分
+2. 在目标页面上按下F12，选择Console或控制台选项卡
+3. 将代码粘贴并按下回车键
 
 
 
