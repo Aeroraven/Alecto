@@ -1,0 +1,1 @@
+uglifyjs dist/alecto.js -c -m -o dist/alecto.min.js

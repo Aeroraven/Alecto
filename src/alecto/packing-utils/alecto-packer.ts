@@ -39,7 +39,7 @@ export class AlectoPacker extends AlectoComponent{
             
             let el = analyzedResult[i];
             let prefix = "Textonly";
-            if(el.photos.length==0&&el.video==null){
+            if(el.photos.length==0&&el.video.length==0){
                 prefix = "Textonly";
             }else{
                 prefix = "Multimedia";

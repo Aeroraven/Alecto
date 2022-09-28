@@ -68,8 +68,9 @@ export class AlectoGlobal{
     }
 
     get version(){
-        return 'v0.2a'
+        return 'v0.2b'
     }
+
 
     public setState(x:AlectoGlobalCodes){
         this.attr.status = x;

@@ -2,14 +2,16 @@ import { pack } from "html2canvas/dist/types/css/types/color";
 import { AlectoCommentAnalyzer } from "../comment-utils/alecto-comment-analyzer";
 import { AlectoCommentHandler } from "../comment-utils/alecto-comment-handler";
 import { AlectoCommentHandlerTaobao } from "../comment-utils/alecto-comment-handler-taobao";
+import { AlectoCommentHandlerTmall } from "../comment-utils/alecto-comment-handler-tmall";
 import { AlectoComponent } from "../core/alecto-component";
-import { AlectoGlobal } from "../core/alecto-global";
+import { AlectoGlobal, AlectoGlobalPlatform } from "../core/alecto-global";
 import { AlectoProgressCallback } from "../core/alecto-progress-callback";
 import { AlectoRuntime } from "../core/alecto-runtime";
 import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
 import { AlectoLang_zhCN } from "../localization/alecto-lang-zh-cn";
 import { AlectoPacker } from "../packing-utils/alecto-packer";
 import { AlectoSnapshotComponentTaobao } from "../snapshot-utils/alecto-snapshot-component-taobao";
+import { AlectoSnapshotComponentTmall } from "../snapshot-utils/alecto-snapshot-component-tmall";
 import { AlectoUIAboutInjector } from "../ui/alecto-ui-about-injector";
 import { AlectoUIInjector, AlectoUIInjectorSbtn } from "../ui/alecto-ui-injector";
 
@@ -33,8 +35,8 @@ export class AlectoWorker extends AlectoComponent{
         this.ui = new AlectoUIInjector();
 
         //Sub UI
-        let sui = new AlectoUIAboutInjector();
-        sui.setup()
+        //let sui = new AlectoUIAboutInjector();
+        //sui.setup()
 
         //Initialize
         runtime.executeSelf()
@@ -53,12 +55,31 @@ export class AlectoWorker extends AlectoComponent{
         let g = AlectoGlobal.getInst()
         g.captchaConfirm = true;
     }
+
+    public getCrawlerType(){
+        let g = AlectoGlobal.getInst()
+        if(g.platform == AlectoGlobalPlatform.AGP_TAOBAO){
+            return AlectoCommentHandlerTaobao
+        }else{
+            return AlectoCommentHandlerTmall
+        }
+    }
+
+    public getSnapshotComType(){
+        let g = AlectoGlobal.getInst()
+        if(g.platform == AlectoGlobalPlatform.AGP_TAOBAO){
+            return AlectoSnapshotComponentTaobao
+        }else{
+            return AlectoSnapshotComponentTmall
+        }
+    }
+
     public async run(){
         let g =  AlectoGlobal.getInst();
-        let commentCrawler: AlectoCommentHandler = new AlectoCommentHandlerTaobao();
+        let commentCrawler: AlectoCommentHandler = new (this.getCrawlerType())();
         let commentAnalyzer: AlectoCommentAnalyzer = new AlectoCommentAnalyzer();
         let packer: AlectoPacker = new AlectoPacker()
-        let snapshotCom = new AlectoSnapshotComponentTaobao();
+        let snapshotCom = new (this.getSnapshotComType())();
         
         //Setup callbacks
         commentCrawler.setCallback((x:any)=>{
