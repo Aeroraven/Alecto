@@ -41,7 +41,7 @@ A user-script to gather data for sellers on some e-shopping platforms
 
 
 
-**3. 不安装 (不建议) **: 其实安装步骤是可选的
+**3. 不安装 (不建议)**: 其实安装步骤是可选的
 
 
 
