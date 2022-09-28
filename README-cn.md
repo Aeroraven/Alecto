@@ -28,6 +28,7 @@ A user-script to gather data for sellers on some e-shopping platforms
 
 1. 请在浏览器上安装Tamper Monkey插件：
    1. Chrome 安装地址：https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo
+      1. 中国大陆地区安装方法需要上网搜索
    2. Edge 安装地址：https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd
 2. 安装脚本
    1. 访问https://github.com/Aeroraven/Alecto
