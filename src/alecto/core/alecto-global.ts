@@ -1,6 +1,11 @@
 import { platform } from "os";
 import { AlectoDefaultLang, AlectoLangDefs } from "./alecto-lang-defs";
 
+export enum AlectoRunEnv{
+    ARE_TAMPER = "TAMPER",
+    ARE_BROWSER = "BROWSER"
+}
+
 export enum AlectoGlobalCodes{
     AGC_IDLE = "IDLE",
     AGC_REOVERRIDE = "REOVERRIDE"
@@ -17,8 +22,10 @@ export interface AlectoGlobalAttrs{
     status: AlectoGlobalCodes,
     platform: AlectoGlobalPlatform,
     captchaConfirm: boolean
-    lang: AlectoLangDefs
+    lang: AlectoLangDefs,
+    envAttr: AlectoRunEnv
 };
+
 
 
 export class AlectoGlobal{
@@ -37,7 +44,8 @@ export class AlectoGlobal{
             status : AlectoGlobalCodes.AGC_IDLE,
             platform: AlectoGlobalPlatform.AGP_UNIDENTIFIED,
             captchaConfirm: true,
-            lang: AlectoDefaultLang
+            lang: AlectoDefaultLang,
+            envAttr: AlectoRunEnv.ARE_BROWSER
         }
     }
     public getEnv(){
@@ -50,6 +58,10 @@ export class AlectoGlobal{
 
     get env(){
         return <Window>this.attr.env;
+    }
+
+    get envAttr(){
+        return this.attr.envAttr
     }
 
     get captchaConfirm(){
@@ -68,7 +80,7 @@ export class AlectoGlobal{
     }
 
     get version(){
-        return 'v0.2b'
+        return 'v0.2c'
     }
 
 

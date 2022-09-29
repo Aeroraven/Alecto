@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "minify":"uglifyjs dist/alecto.js -c -m -o dist/alecto.min.js"
+    "minify": "uglifyjs dist/alecto.js -c -m -o dist/alecto.min.js",
+    "user": "node src/alecto-builder/alecto-userscript-builder.js"
   },
   "repository": {
     "type": "git",

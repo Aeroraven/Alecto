@@ -1,6 +1,6 @@
 import { AlectoAssets } from "../asset/alecto-assets";
 import { AlectoComponent } from "./alecto-component";
-import { AlectoGlobal, AlectoGlobalCodes, AlectoGlobalPlatform } from "./alecto-global";
+import { AlectoGlobal, AlectoGlobalCodes, AlectoGlobalPlatform, AlectoRunEnv } from "./alecto-global";
 
 declare var unsafeWindow : Window | null | undefined;
 
@@ -14,11 +14,13 @@ export class AlectoRuntime extends AlectoComponent{
         //Tampermonkey
         if(typeof unsafeWindow != 'undefined'){
             w.attr.env = unsafeWindow;
+            w.attr.envAttr = AlectoRunEnv.ARE_TAMPER
             return;
         }
         //Browser
         if(window != null && window != undefined){
             w.attr.env = window;
+            w.attr.envAttr = AlectoRunEnv.ARE_BROWSER
             return;
         }
     }

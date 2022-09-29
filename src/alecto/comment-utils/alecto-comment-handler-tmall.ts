@@ -24,7 +24,7 @@ export class AlectoCommentHandlerTmall extends AlectoCommentHandler{
     public simStartup(): void {
         let btns = document.getElementsByTagName('a');
         for(let i=0;i<btns.length;i++){
-            if(btns[i].innerHTML.match(/评\&nbsp;\&nbsp;价/g)!=null){
+            if(btns[i].innerHTML.match(/.*\&nbsp;\&nbsp;.*/g)!=null){
                 (<HTMLElement>btns[i]).click();
             }
         }
@@ -169,7 +169,7 @@ export class AlectoCommentHandlerTmall extends AlectoCommentHandler{
                 
             }
             curIndex++;
-            await AlectoRuntimeUtils.sleep(2000);
+            await AlectoRuntimeUtils.sleep(1000);
         }
         return commentLists;
     }

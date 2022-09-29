@@ -8,6 +8,7 @@ import { AlectoGlobal, AlectoGlobalPlatform } from "../core/alecto-global";
 import { AlectoProgressCallback } from "../core/alecto-progress-callback";
 import { AlectoRuntime } from "../core/alecto-runtime";
 import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
+import { AlectoLang_enUS } from "../localization/alecto-lang-en-us";
 import { AlectoLang_zhCN } from "../localization/alecto-lang-zh-cn";
 import { AlectoPacker } from "../packing-utils/alecto-packer";
 import { AlectoSnapshotComponentTaobao } from "../snapshot-utils/alecto-snapshot-component-taobao";
@@ -31,7 +32,7 @@ export class AlectoWorker extends AlectoComponent{
     public async executeSelf(): Promise<void> {
         let ag =  AlectoGlobal.getInst();
         let runtime = new AlectoRuntime();
-        let language = AlectoLang_zhCN;
+        let language = AlectoLang_enUS;
         this.ui = new AlectoUIInjector();
 
         //Sub UI
@@ -48,6 +49,31 @@ export class AlectoWorker extends AlectoComponent{
         //Expose 
         ag.env.alecto = this;
 
+        this.ui.setBannerInfo("Waiting for page loading...",AlectoUIInjectorSbtn.AUIS_HIDE);
+        await AlectoRuntimeUtils.periodicCheck(()=>{
+            let g = AlectoGlobal.getInst()
+            if(g.platform == AlectoGlobalPlatform.AGP_TMALL){
+                try{
+                    let w:any = document.getElementsByClassName("ke-post")[0]!.children[1].children;
+                    if(w!=undefined){
+                        return true
+                    }
+                    return false
+                }catch(e){
+                    return false
+                }
+            }else{
+                try{
+                    let w:any = document.getElementById("J_DivItemDesc")!.children[0].children;
+                    if(w!=undefined){
+                        return true
+                    }
+                    return false
+                }catch(e){
+                    return false
+                }
+            }
+        },100)
         this.ui.setBannerInfo(ag.lang.initdone,AlectoUIInjectorSbtn.AUIS_SHOW);
         AlectoRuntimeUtils.log("Initialization is done.");
     }

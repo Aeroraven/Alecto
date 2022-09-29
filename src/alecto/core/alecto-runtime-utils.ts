@@ -1,4 +1,12 @@
+import { saveAs } from "file-saver";
 import { alectoPakoGzip, alectoPakoUnGzip } from "../../alecto-external/alecto-pako-wrapper/alecto-pako-wrapper-native";
+import { AlectoGlobal, AlectoRunEnv } from "./alecto-global";
+
+declare function GM_download(x:{
+    url:string,
+    name:string,
+    onload:()=>any
+}):unknown;
 
 export class AlectoRuntimeUtils{
     public static formatEllipsis(str = '', limitLen = 48){
@@ -12,7 +20,41 @@ export class AlectoRuntimeUtils{
           })
         return inx === -1 ? str : str.substr(0, inx) + '...';
     };
-
+    public static async download(x:string|Blob,y:string){
+        let g = AlectoGlobal.getInst()
+        if(g.attr.envAttr == AlectoRunEnv.ARE_BROWSER){
+            AlectoRuntimeUtils.log("SaveAs")
+            saveAs(x,y)
+        }else{
+            AlectoRuntimeUtils.log("GM_Download")
+            let xt:string;
+            if(x instanceof Blob){
+                AlectoRuntimeUtils.log("Converting Blob")
+                await new Promise((resolve)=>{
+                    let reader = new FileReader();
+                    reader.readAsDataURL(<Blob>x);
+                    reader.onloadend = function () {
+                        xt = <string>reader.result;
+                        resolve(1);
+                    }
+                })
+                
+            }else{
+                xt = x
+            }
+            await new Promise((r)=>{
+                AlectoRuntimeUtils.log("Download")
+                GM_download({
+                    url:xt,
+                    name:y,
+                    onload:()=>{
+                        r(0);
+                    }
+                })
+            })
+        }
+        
+    }
     public static log(x:string){
         console.log("[Alecto] "+x);
     }

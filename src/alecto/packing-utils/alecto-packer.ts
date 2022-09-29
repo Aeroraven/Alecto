@@ -94,11 +94,12 @@ export class AlectoPacker extends AlectoComponent{
         this.doCallback(cb);
 
         await this.execute(true);
-
+        AlectoRuntimeUtils.log("Generating Zip")
         let content = await this.zip.generateAsync({type:"blob"});
+        AlectoRuntimeUtils.log("Get Name")
         let data = document.getElementsByTagName("title")[0].innerHTML
         
-        saveAs(content, data+".zip");
+        AlectoRuntimeUtils.download(content, data+".zip");
     }
 
 
