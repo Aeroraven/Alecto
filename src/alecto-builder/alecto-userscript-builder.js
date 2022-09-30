@@ -18,7 +18,17 @@ let h = `// ==UserScript==
 // @grant        GM_download
 // ==/UserScript==
 `
-let p = h+"\n unsafeWindow.eval(unsafeWindow.atob('"+w+"'))"
+let p = h+`\n 
+unsafeWindow.define = null
+unsafeWindow.alectoDocument = document
+let w = (unsafeWindow.atob('`+w+`'));
+unsafeWindow.onload = ()=>{
+    let script= document.createElement('script');
+    script.innerHTML=w;
+    document.body.appendChild(script);
+}
+`
+
 fs.writeFile('./dist/alecto.user.js', p ,err=>{
     if(err){
         throw err

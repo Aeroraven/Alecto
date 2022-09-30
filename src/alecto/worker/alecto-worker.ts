@@ -48,23 +48,21 @@ export class AlectoWorker extends AlectoComponent{
 
         //Expose 
         ag.env.alecto = this;
-
+        console.log("HAA")
         this.ui.setBannerInfo("Waiting for page loading...",AlectoUIInjectorSbtn.AUIS_HIDE);
+        console.log("HAA")
+        let doc = AlectoGlobal.getInst().document;
         await AlectoRuntimeUtils.periodicCheck(()=>{
             let g = AlectoGlobal.getInst()
             if(g.platform == AlectoGlobalPlatform.AGP_TMALL){
-                try{
-                    let w:any = document.getElementsByClassName("ke-post")[0]!.children[1].children;
-                    if(w!=undefined){
-                        return true
-                    }
-                    return false
-                }catch(e){
-                    return false
+                let w:any = doc.getElementById("description")
+                if(w!=undefined){
+                    return true
                 }
+                return false
             }else{
                 try{
-                    let w:any = document.getElementById("J_DivItemDesc")!.children[0].children;
+                    let w:any = doc.getElementById("J_DivItemDesc")!.children[0].children;
                     if(w!=undefined){
                         return true
                     }
@@ -73,7 +71,7 @@ export class AlectoWorker extends AlectoComponent{
                     return false
                 }
             }
-        },100)
+        },1000)
         this.ui.setBannerInfo(ag.lang.initdone,AlectoUIInjectorSbtn.AUIS_SHOW);
         AlectoRuntimeUtils.log("Initialization is done.");
     }

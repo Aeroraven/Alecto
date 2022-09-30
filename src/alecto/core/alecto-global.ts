@@ -23,7 +23,8 @@ export interface AlectoGlobalAttrs{
     platform: AlectoGlobalPlatform,
     captchaConfirm: boolean
     lang: AlectoLangDefs,
-    envAttr: AlectoRunEnv
+    envAttr: AlectoRunEnv,
+    envDoc: Document
 };
 
 
@@ -45,7 +46,8 @@ export class AlectoGlobal{
             platform: AlectoGlobalPlatform.AGP_UNIDENTIFIED,
             captchaConfirm: true,
             lang: AlectoDefaultLang,
-            envAttr: AlectoRunEnv.ARE_BROWSER
+            envAttr: AlectoRunEnv.ARE_BROWSER,
+            envDoc: document
         }
     }
     public getEnv(){
@@ -81,6 +83,10 @@ export class AlectoGlobal{
 
     get version(){
         return 'v0.2c'
+    }
+
+    get document(){
+        return this.attr.envDoc
     }
 
 

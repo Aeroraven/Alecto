@@ -6,17 +6,24 @@ import { AlectoCommentFormat, AlectoCommentHandler } from "./alecto-comment-hand
 
 export class AlectoCommentHandlerTmall extends AlectoCommentHandler{
     public detectAbstracts(): string[] {
-        let rets = [];
-        let w =  document.getElementsByClassName("ke-post")[0]!.children[1].children;
-        for(let i=0;i<w.length;i++){
-            if(w[i].localName == 'img'){
-                if('data-ks-lazyload' in w[i].attributes){
-                    rets.push(w[i].attributes.getNamedItem('data-ks-lazyload')!.value);
+        let rets:string[] = [];
+        let w =  <HTMLElement>document.getElementById("description");
+        console.log(w)
+        const iterateChildren = (x:HTMLElement)=>{
+            let w = x.children
+            for(let i=0;i<w.length;i++){
+                if(w[i].localName == 'img'){
+                    if('data-ks-lazyload' in w[i].attributes){
+                        rets.push(w[i].attributes.getNamedItem('data-ks-lazyload')!.value);
+                    }else{
+                        rets.push(w[i].attributes.getNamedItem('src')!.value);
+                    }
                 }else{
-                    rets.push(w[i].attributes.getNamedItem('src')!.value);
+                    iterateChildren(<HTMLElement>w[i])
                 }
             }
         }
+        iterateChildren(w)
         console.log(rets);
         return rets;
     }

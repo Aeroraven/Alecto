@@ -3,6 +3,7 @@ import { AlectoComponent } from "./alecto-component";
 import { AlectoGlobal, AlectoGlobalCodes, AlectoGlobalPlatform, AlectoRunEnv } from "./alecto-global";
 
 declare var unsafeWindow : Window | null | undefined;
+declare var alectoDocument: Document | null
 
 export class AlectoRuntime extends AlectoComponent{
     constructor(){
@@ -15,13 +16,21 @@ export class AlectoRuntime extends AlectoComponent{
         if(typeof unsafeWindow != 'undefined'){
             w.attr.env = unsafeWindow;
             w.attr.envAttr = AlectoRunEnv.ARE_TAMPER
-            return;
         }
         //Browser
-        if(window != null && window != undefined){
+        else if(window != null && window != undefined){
             w.attr.env = window;
             w.attr.envAttr = AlectoRunEnv.ARE_BROWSER
-            return;
+        }else{
+            console.log("UNSUPPORTED ENV")
+        }
+
+        let wd : any = w.attr.env
+        if(wd.alectoDocument != null){
+            console.log("SET Doc")
+            w.attr.envDoc = <Document>wd.alectoDocument;
+        }else{
+            console.log(wd)
         }
     }
     
@@ -36,7 +45,7 @@ export class AlectoRuntime extends AlectoComponent{
 
     private platformDetect(){
         let g = AlectoGlobal.getInst()
-        if(g.env.location.host.match(/\.tmall\.com$/g)){
+        if(g.env.location.host.match(/\.tmall\..*$/g)){
             g.attr.platform = AlectoGlobalPlatform.AGP_TMALL
         }else{
             g.attr.platform = AlectoGlobalPlatform.AGP_TAOBAO
