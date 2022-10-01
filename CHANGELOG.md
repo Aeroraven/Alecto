@@ -48,6 +48,7 @@
 **EN**
 
 - New: Support for TMALLv8
+- Change: Reduce action cooldown
 - Change: Refine RegEx match for TMALL. Only showcase pages will trigger alecto listener.
 - Bug Fix: Wrong element detection on TMALL
 - Bug Fix: Runtime utility `periodicCheck` keeps on running after promises being resolved
@@ -58,7 +59,8 @@
 **CN**
 
 - 增加：对TMALLv8平台的支持
-- 修改：优化了TMALL的正则匹配规则，现在只有在橱窗页面显示UI
+- 调整：减少冷却间隔
+- 调整：优化了TMALL的正则匹配规则，现在只有在橱窗页面显示UI
 - 修复：对TMALL页面错误的元素侦测
 - 修复：运行时工具 `periodicCheck` 在异步Promise被解决时仍在运行的问题
 - 修复：在JSONP对应的DOM节点`script`载入完成前获取JSONP导致值为空的问题
