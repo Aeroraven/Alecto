@@ -9,6 +9,24 @@ declare function GM_download(x:{
 }):unknown;
 
 export class AlectoRuntimeUtils{
+    public static base64Encode(s:string){
+        let g = AlectoGlobal.getInst().env
+        return g.btoa(encodeURIComponent(s))
+    }
+    public static base64Decode(s:string){
+        let g = AlectoGlobal.getInst().env
+        return decodeURIComponent(g.atob(s))
+    }
+    public static parseCookie(s:string){
+        let cookiePattern = /^(\S+)=(\S+)$/;
+        let cookieArray = s.split("; ");
+        let cookieMap = new Map<string,string>();
+        for(let item of cookieArray) {
+            let resultArray = cookiePattern.exec(item);
+            cookieMap.set(resultArray![1], resultArray![2]);
+        }
+        return cookieMap;
+    }
     public static formatEllipsis(str = '', limitLen = 48){
         let 
           len = 0,
@@ -86,8 +104,9 @@ export class AlectoRuntimeUtils{
 
     public static async periodicCheck(cond:()=>boolean,interval:number=1000){
         await new Promise((resolve)=>{
-            setInterval(()=>{
+            let fw = setInterval(()=>{
                 if(cond()){
+                    clearInterval(fw)
                     resolve(0);
                 }
             },interval);

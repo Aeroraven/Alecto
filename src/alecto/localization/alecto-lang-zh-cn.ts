@@ -18,5 +18,6 @@ export var AlectoLang_zhCN : AlectoLangDefs = {
     captchaRej:"需要完成验证码后继续。在评论页面中随机选择一页，后进行验证。验证完毕点击“版本信息”按钮确认。",
     abstractImage:"获取介绍图片",
     snapshot:"正在截取评论，页面可能有跳动现象",
-    cors:"由于跨域(CORS)限制，所有的图片无法正常截取。但是该功能仍然能够实现，但相对复杂。"
+    cors:"由于跨域(CORS)限制，所有的图片无法正常截取。但是该功能仍然能够实现，但相对复杂。",
+    invalidPlatform:""
 }

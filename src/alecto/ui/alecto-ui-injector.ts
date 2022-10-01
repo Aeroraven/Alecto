@@ -34,7 +34,9 @@ export class AlectoUIInjector extends AlectoComponent{
             document.getElementById("alecto-btn-a")!.style.display = "none";
         }
     };
-
+    public detachBanner(){
+        this.bannerObject.style.display = "none"
+    }
     public setupBanner(){
         let g = AlectoGlobal.getInst()
         let w = document.createElement("div");
@@ -43,6 +45,7 @@ export class AlectoUIInjector extends AlectoComponent{
         w.style.left = "0px";
         w.style.width = "100%";
         w.style.zIndex = "114514191"; //?
+        w.id = "alecto-wrapper"
         w.innerHTML = g.lang.startup;
         w.style.height = "40px";
         w.style.backgroundColor = "#0b0b0b";

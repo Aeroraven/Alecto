@@ -6,6 +6,8 @@ declare global {
     interface Window{
         jsonp_tbcrate_reviews_list:  AlectoJSONPInjectorCallbackFunc
         jsonp442: AlectoJSONPInjectorCallbackFunc
+        mtopjsonp2: AlectoJSONPInjectorCallbackFunc
+        mtopjsonp3: AlectoJSONPInjectorCallbackFunc
     }
 }
 
@@ -45,6 +47,8 @@ export class AlectoJSONPInjector{
             this.jsonpContent = x;
             return x;
         };
+        g.getEnv().mtopjsonp3 = w;
+        g.getEnv().mtopjsonp2 = w;
         g.getEnv().jsonp442 = w;
         g.getEnv().jsonp_tbcrate_reviews_list = w;
     }

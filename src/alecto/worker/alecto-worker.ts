@@ -3,6 +3,7 @@ import { AlectoCommentAnalyzer } from "../comment-utils/alecto-comment-analyzer"
 import { AlectoCommentHandler } from "../comment-utils/alecto-comment-handler";
 import { AlectoCommentHandlerTaobao } from "../comment-utils/alecto-comment-handler-taobao";
 import { AlectoCommentHandlerTmall } from "../comment-utils/alecto-comment-handler-tmall";
+import { AlectoCommentHandlerTmallV8 } from "../comment-utils/alecto-comment-handler-tmall-v8";
 import { AlectoComponent } from "../core/alecto-component";
 import { AlectoGlobal, AlectoGlobalPlatform } from "../core/alecto-global";
 import { AlectoProgressCallback } from "../core/alecto-progress-callback";
@@ -35,10 +36,6 @@ export class AlectoWorker extends AlectoComponent{
         let language = AlectoLang_enUS;
         this.ui = new AlectoUIInjector();
 
-        //Sub UI
-        //let sui = new AlectoUIAboutInjector();
-        //sui.setup()
-
         //Initialize
         runtime.executeSelf()
         ag.lang = language
@@ -48,17 +45,27 @@ export class AlectoWorker extends AlectoComponent{
 
         //Expose 
         ag.env.alecto = this;
-        console.log("HAA")
         this.ui.setBannerInfo("Waiting for page loading...",AlectoUIInjectorSbtn.AUIS_HIDE);
-        console.log("HAA")
         let doc = AlectoGlobal.getInst().document;
+        let g = AlectoGlobal.getInst()
+        if(g.platform == AlectoGlobalPlatform.AGP_UNIDENTIFIED){
+            this.ui.detachBanner()
+            AlectoRuntimeUtils.log("Alecto will rest for no items can be detected");
+            return 
+        }
+
+        let scrollH = 100
+        let scrollHInc = 100
+        //Waiting for Page Loading
         await AlectoRuntimeUtils.periodicCheck(()=>{
-            let g = AlectoGlobal.getInst()
-            if(g.platform == AlectoGlobalPlatform.AGP_TMALL){
+            if(g.platform == AlectoGlobalPlatform.AGP_TMALL || g.platform == AlectoGlobalPlatform.AGP_TMALLV8){
                 let w:any = doc.getElementById("description")
-                if(w!=undefined){
+                let wx = doc.getElementsByClassName("descV8-container")
+                if(w!=undefined || wx.length > 0){
                     return true
                 }
+                doc.body.scrollTop = scrollH
+                scrollH += scrollHInc
                 return false
             }else{
                 try{
@@ -71,7 +78,7 @@ export class AlectoWorker extends AlectoComponent{
                     return false
                 }
             }
-        },1000)
+        },200)
         this.ui.setBannerInfo(ag.lang.initdone,AlectoUIInjectorSbtn.AUIS_SHOW);
         AlectoRuntimeUtils.log("Initialization is done.");
     }
@@ -84,8 +91,14 @@ export class AlectoWorker extends AlectoComponent{
         let g = AlectoGlobal.getInst()
         if(g.platform == AlectoGlobalPlatform.AGP_TAOBAO){
             return AlectoCommentHandlerTaobao
-        }else{
+        }
+        else if(g.platform == AlectoGlobalPlatform.AGP_TMALL){
             return AlectoCommentHandlerTmall
+        }
+        else if(g.platform == AlectoGlobalPlatform.AGP_TMALLV8){
+            return AlectoCommentHandlerTmallV8
+        }else{
+            return AlectoCommentHandlerTaobao
         }
     }
 
@@ -156,7 +169,6 @@ export class AlectoWorker extends AlectoComponent{
             commentCrawler.simStartup();
 
             //Find All Comments
-            await AlectoRuntimeUtils.sleep(4000);
             let respBody = await commentCrawler.findJsonpBody();
 
             //Analyze Comments

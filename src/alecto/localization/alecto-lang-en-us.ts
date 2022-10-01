@@ -18,5 +18,6 @@ export var AlectoLang_enUS : AlectoLangDefs = {
     captchaRej:"Captcha required. After the validation, press Version button to continue",
     abstractImage:"Fetching abstracts",
     snapshot:"Capturing comments",
-    cors:"Images are not captured due to CORS"
+    cors:"Images are not captured due to CORS",
+    invalidPlatform:"Sorry! Current page is not supported now."
 }

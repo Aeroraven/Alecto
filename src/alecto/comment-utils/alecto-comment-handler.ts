@@ -21,4 +21,5 @@ export abstract class AlectoCommentHandler extends AlectoComponent{
     public async findJsonpBody():Promise<AlectoCommentFormat[]> {return []}
     public abstract simStartup():void;
     public abstract detectAbstracts():string[];
+    public extraHooks():void {}
 }

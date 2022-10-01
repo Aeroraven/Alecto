@@ -1,6 +1,7 @@
 import { AlectoAssets } from "../asset/alecto-assets";
 import { AlectoComponent } from "./alecto-component";
 import { AlectoGlobal, AlectoGlobalCodes, AlectoGlobalPlatform, AlectoRunEnv } from "./alecto-global";
+import { AlectoRuntimeUtils } from "./alecto-runtime-utils";
 
 declare var unsafeWindow : Window | null | undefined;
 declare var alectoDocument: Document | null
@@ -9,7 +10,9 @@ export class AlectoRuntime extends AlectoComponent{
     constructor(){
         super();
     }
-
+    private hijackNativeMethods(){
+        document.head.removeChild = <T extends Node>(child:T)=>{return child}
+    }
     private initEnv(){
         let w = AlectoGlobal.getInst();
         //Tampermonkey
@@ -22,12 +25,11 @@ export class AlectoRuntime extends AlectoComponent{
             w.attr.env = window;
             w.attr.envAttr = AlectoRunEnv.ARE_BROWSER
         }else{
-            console.log("UNSUPPORTED ENV")
+            AlectoRuntimeUtils.log("UNSUPPORTED ENV")
         }
 
         let wd : any = w.attr.env
         if(wd.alectoDocument != null){
-            console.log("SET Doc")
             w.attr.envDoc = <Document>wd.alectoDocument;
         }else{
             console.log(wd)
@@ -45,10 +47,18 @@ export class AlectoRuntime extends AlectoComponent{
 
     private platformDetect(){
         let g = AlectoGlobal.getInst()
-        if(g.env.location.host.match(/\.tmall\..*$/g)){
-            g.attr.platform = AlectoGlobalPlatform.AGP_TMALL
-        }else{
+        if(g.env.location.href.match(/detail\.tmall\..*\/.*item\.htm/g)){
+            let fktb = (<any>g.env).__ASSET_PATH__;
+            if(fktb == null){
+                g.attr.platform = AlectoGlobalPlatform.AGP_TMALL
+            }else{
+                g.attr.platform = AlectoGlobalPlatform.AGP_TMALLV8
+            }
+
+        }else if(g.env.location.href.match(/item\.taobao\..*\/.*item\.htm/g)){
             g.attr.platform = AlectoGlobalPlatform.AGP_TAOBAO
+        }else{
+            g.attr.platform = AlectoGlobalPlatform.AGP_UNIDENTIFIED
         }
     }
 
@@ -62,5 +72,6 @@ export class AlectoRuntime extends AlectoComponent{
         this.recoverNativeMethods();
         this.platformDetect();
         this.emitAssets()
+        this.hijackNativeMethods()
     }
 }

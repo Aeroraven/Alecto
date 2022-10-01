@@ -14,6 +14,7 @@ export enum AlectoGlobalCodes{
 export enum AlectoGlobalPlatform{
     AGP_TAOBAO = "TAOBAO",
     AGP_TMALL = "TMALL",
+    AGP_TMALLV8 = "TMALLV8",
     AGP_UNIDENTIFIED = "UNKNOWN"
 }
 
@@ -82,7 +83,7 @@ export class AlectoGlobal{
     }
 
     get version(){
-        return 'v0.2c'
+        return 'v0.2d'
     }
 
     get document(){

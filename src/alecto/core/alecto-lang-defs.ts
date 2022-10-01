@@ -17,6 +17,8 @@ export interface AlectoLangDefs{
     abstractImage:string
     snapshot:string
     cors:string
+    //0.2d
+    invalidPlatform: string
 }
 
 export var AlectoDefaultLang : AlectoLangDefs = {
@@ -37,5 +39,6 @@ export var AlectoDefaultLang : AlectoLangDefs = {
     captchaRej:"",
     abstractImage:"",
     snapshot:"",
-    cors:""
+    cors:"",
+    invalidPlatform:""
 }

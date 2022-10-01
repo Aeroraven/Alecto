@@ -75,8 +75,15 @@ export class AlectoPacker extends AlectoComponent{
                     } 
                     this.doCallback(cb);
                     
-                    AlectoRuntimeUtils.log("Fetching video resource:"+el.video[j].replace(/\/\//g,""));
-                    let x = await AlectoRuntimeUtils.fetchBlob("https:"+el.video[j]);
+                    AlectoRuntimeUtils.log("Fetching video resource:"+el.video[j].replace(/^\/\//g,""));
+
+                    let x:Blob;
+                    if(el.video[j].match(/^http/g)!=null){
+                        x = await AlectoRuntimeUtils.fetchBlob(el.video[j]);
+                    }else{
+                        x = await AlectoRuntimeUtils.fetchBlob("https:"+el.video[j]);
+                    }
+                    
                     size+=x.size;
                     await AlectoRuntimeUtils.sleep(100);
                     folder.file(j+".mp4",x);

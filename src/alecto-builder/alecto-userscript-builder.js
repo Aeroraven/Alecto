@@ -9,7 +9,7 @@ let w = base64_encode('./dist/alecto.min.js')
 let h = `// ==UserScript==
 // @name         Alecto
 // @namespace    https://github.com/Aeroraven/Alecto/
-// @version      0.2c
+// @version      0.2d
 // @description  Alecto Userscript
 // @author       Aeroraven
 // @include      *taobao*
@@ -19,7 +19,6 @@ let h = `// ==UserScript==
 // ==/UserScript==
 `
 let p = h+`\n 
-unsafeWindow.define = null
 unsafeWindow.alectoDocument = document
 let w = (unsafeWindow.atob('`+w+`'));
 unsafeWindow.onload = ()=>{

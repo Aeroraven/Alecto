@@ -59,6 +59,10 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
     public async findJsonpBody():Promise<AlectoCommentFormat[]>{
         let g = AlectoGlobal.getInst()
         let uri = this.locateJsonpAddress();
+        await AlectoRuntimeUtils.periodicCheck(()=>{
+            uri = this.locateJsonpAddress();
+            return uri != ""
+        },500)
         let commentLists:AlectoCommentFormat[] = [];
         let curIndex = 1;
         let injector = new AlectoJSONPInjector();
