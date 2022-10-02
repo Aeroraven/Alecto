@@ -45,6 +45,8 @@
 
 #### v0.2d
 
+**2022-10-1**
+
 **EN**
 
 - New: Support for TMALLv8
@@ -64,3 +66,29 @@
 - 修复：对TMALL页面错误的元素侦测
 - 修复：运行时工具 `periodicCheck` 在异步Promise被解决时仍在运行的问题
 - 修复：在JSONP对应的DOM节点`script`载入完成前获取JSONP导致值为空的问题
+
+
+
+#### v0.2e 
+
+**2022-10-2**
+
+**EN**
+
+- New: Added about page
+- New: Support for Simplified Chinese encoding
+- New: Comment snapshots handler will capture cross-origin images on TAOBAO platform
+  - This action is destructive for the page.
+- Change: Remove legacy scripts 
+- Change: Deprecates launcher
+
+
+
+**CN**
+
+- 增加：关于页面
+- 增加：支持中文(GBK编码)
+- 增加：截图组件将支持对`TAOBAO`评论区的所有跨域图片的获取
+  - 该操作将对浏览页面进行破坏性操作
+- 修改：移除遗留脚本
+- 修改：对启动器标记弃用

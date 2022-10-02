@@ -77,6 +77,30 @@ export class AlectoRuntimeUtils{
         console.log("[Alecto] "+x);
     }
 
+    public static async imageToBase64(url:string){
+        function getBase64Image(image:HTMLImageElement) {
+            var canvas = document.createElement("canvas")
+            canvas.width = image.width
+            canvas.height = image.height
+            var context = canvas.getContext('2d')
+            context!.drawImage(image, 0, 0, image.width, image.height)
+            var quality = 0.8
+            var dataURL = canvas.toDataURL("image/jpeg", quality) 
+            return dataURL;
+        }
+        let ret = ""
+        const image = new Image();
+        await new Promise(function(resolve, reject) {
+            image.setAttribute('crossOrigin', 'anonymous') 
+            image.src = url + "?v=" + Math.random()
+            image.onload = function() {
+                resolve("");
+            }
+        })
+        ret = getBase64Image(image);
+        return ret;
+    }
+
     public static async fetchText(url:string){
         let response = await window.fetch(url);
         return await response.text();

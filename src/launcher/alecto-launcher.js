@@ -1,4 +1,5 @@
 (function(){
+    alert("ALECTO LAUNCHER IS DEPRECATED!")
     alert("Launcher starts. Please wait...");
     if('alecto' in window){
         alert("Alecto has already been launched.");

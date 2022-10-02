@@ -19,5 +19,5 @@ export var AlectoLang_zhCN : AlectoLangDefs = {
     abstractImage:"获取介绍图片",
     snapshot:"正在截取评论，页面可能有跳动现象",
     cors:"由于跨域(CORS)限制，所有的图片无法正常截取。但是该功能仍然能够实现，但相对复杂。",
-    invalidPlatform:""
+    invalidPlatform:"当前平台不被支持"
 }

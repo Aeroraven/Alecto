@@ -1,5 +1,6 @@
 import { AlectoAssets } from "../asset/alecto-assets";
 import { AlectoComponent } from "../core/alecto-component";
+import { AlectoGlobal } from "../core/alecto-global";
 
 export class AlectoUIAboutInjector extends AlectoComponent{
     alertObject: HTMLDivElement
@@ -12,10 +13,10 @@ export class AlectoUIAboutInjector extends AlectoComponent{
     setup(){
         let w = this.alertObject;
         w.style.position = "fixed";
-
+        w.id = "alecto-about-popup"
         w.style.width = "50%";
-        w.style.height = "40%";
-        w.style.marginTop = "-10%";
+        w.style.height = "50%";
+        w.style.marginTop = "-15%";
         w.style.marginLeft = "-25%";
         w.style.left = "50%";
         w.style.top = "50%";
@@ -77,16 +78,20 @@ export class AlectoUIAboutInjector extends AlectoComponent{
             <div style="position:relative;height:80%">
                 
                 <span>
-                    <b style="color:#10b2ff">版本 v0.2b</b><br/>
+                    <b style="color:#10b2ff">版本 `+AlectoGlobal.getInst().version+` 注意事项</b><br/>
                     <p >
-                        1. 使用TypeScript重构：评论截图模块<br/>
-                        2. 修复部分错误<br/>
-                        3. 请保证在网络畅通条件下使用本插件<br/>
+                        1. 脚本将对您当前浏览的网页进行破坏性且不可逆的操作，请不要使用当前网页进行敏感操作。<br/>
+                        2. 脚本将访问您的敏感信息，如Cookie等。但不会将其存储、上传。<br/>
+                        3. 脚本的使用可能违反您和当前网页提供者签订的用户协议，作者不对此造成的后果承担责任<br/>
+                        4. 请勿将此脚本运用于非法用途<br/>
+                        5. 软件代码本体使用MIT开源协议，您可以按照协议要求修改复制分发，并且用于商业用途，作者不承担责任。<br/>
+                        6. 软件扩展部分和UI引用部分资源使用CC4.0-BY-NC或类似协议，将软件用于商用时，需要排除这些部分。<br/>
+                        7. 不同意可以在Tamper Monkey选项卡中关闭本脚本。
                         <br/>
-                        Alecto@0.2b, https://github.com/Aeroraven/Alecto
+                        代码地址: https://github.com/Aeroraven/Alecto
                     </p>
                 </span>
-                <span class="alecto-btn-b">确定</span>
+                <span class="alecto-btn-b" onclick="document.getElementById('alecto-about-popup').style.display='none'">确定</span>
             </div>
         </div>
         `

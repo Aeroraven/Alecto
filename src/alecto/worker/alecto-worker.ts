@@ -33,8 +33,11 @@ export class AlectoWorker extends AlectoComponent{
     public async executeSelf(): Promise<void> {
         let ag =  AlectoGlobal.getInst();
         let runtime = new AlectoRuntime();
-        let language = AlectoLang_enUS;
+        let language = AlectoLang_zhCN;
         this.ui = new AlectoUIInjector();
+
+        let sui = new AlectoUIAboutInjector();
+        sui.setup()
 
         //Initialize
         runtime.executeSelf()
