@@ -48,8 +48,6 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                 if(el.src.match(matchDest)!=null){
                     destAddr = el.src;
                 }
-            }else{
-                AlectoRuntimeUtils.log("Skipped invalid node"+el);
             }
         });
         AlectoRuntimeUtils.log("Find comment JSONP URI:"+destAddr);
@@ -61,6 +59,9 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
         let uri = this.locateJsonpAddress();
         await AlectoRuntimeUtils.periodicCheck(()=>{
             uri = this.locateJsonpAddress();
+            if(uri == ""){
+                AlectoRuntimeUtils.log("Failed to find JSONP Address. Retrying...");
+            }
             return uri != ""
         },500)
         let commentLists:AlectoCommentFormat[] = [];
@@ -69,7 +70,7 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
         while(true){
             let rpUri = uri.replace(/currentPageNum.?[0-9]+/,"currentPageNum="+curIndex);
             let respBody = await injector.inject(rpUri);
-            AlectoRuntimeUtils.log("Jsonp:"+rpUri);
+            AlectoRuntimeUtils.log("Initiate JSONP Request:"+rpUri);
             //Callback
             let cb:AlectoProgressCallback = {
                 status: g.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",

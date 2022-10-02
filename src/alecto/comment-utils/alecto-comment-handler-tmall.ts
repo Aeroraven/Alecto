@@ -70,8 +70,6 @@ export class AlectoCommentHandlerTmall extends AlectoCommentHandler{
                 if(el.src.match(matchDest)!=null){
                     destAddr = el.src;
                 }
-            }else{
-                AlectoRuntimeUtils.log("Skipped invalid node"+el);
             }
         });
         AlectoRuntimeUtils.log("Find comment JSONP URI:"+destAddr);
@@ -92,7 +90,7 @@ export class AlectoCommentHandlerTmall extends AlectoCommentHandler{
         while(true){
             let rpUri = uri.replace(/currentPage.?[0-9]+/,"currentPage="+curIndex);
             let respBody = await injector.inject(rpUri);
-            AlectoRuntimeUtils.log("Jsonp:"+rpUri);
+            AlectoRuntimeUtils.log("Initiating JSONP Request:"+rpUri);
             //Callback
             let cb:AlectoProgressCallback = {
                 status: g.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",

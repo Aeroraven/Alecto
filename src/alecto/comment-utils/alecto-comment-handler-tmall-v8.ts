@@ -65,8 +65,6 @@ export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
                 if(el.src.match(matchDest)!=null){
                     destAddr = el.src;
                 }
-            }else{
-                AlectoRuntimeUtils.log("Skipped invalid node"+el);
             }
         });
         AlectoRuntimeUtils.log("Find comment JSONP URI:"+destAddr);

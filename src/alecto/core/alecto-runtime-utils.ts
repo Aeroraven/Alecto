@@ -1,6 +1,7 @@
 import { saveAs } from "file-saver";
 import { alectoPakoGzip, alectoPakoUnGzip } from "../../alecto-external/alecto-pako-wrapper/alecto-pako-wrapper-native";
 import { AlectoGlobal, AlectoRunEnv } from "./alecto-global";
+import { AlectoLogger } from "./alecto-logger";
 
 declare function GM_download(x:{
     url:string,
@@ -41,7 +42,7 @@ export class AlectoRuntimeUtils{
     public static async download(x:string|Blob,y:string){
         let g = AlectoGlobal.getInst()
         if(g.attr.envAttr == AlectoRunEnv.ARE_BROWSER){
-            AlectoRuntimeUtils.log("SaveAs")
+            AlectoRuntimeUtils.log("Saving packed file")
             saveAs(x,y)
         }else{
             AlectoRuntimeUtils.log("GM_Download")
@@ -73,8 +74,27 @@ export class AlectoRuntimeUtils{
         }
         
     }
+
+    public static dateFormat (date:Date,fmt:string) {
+        //By meizz @ https://www.jianshu.com/p/d6eb9466a4fa
+        var o = {
+            "M+": date.getMonth() + 1, 
+            "d+": date.getDate(), 
+            "h+": date.getHours(), 
+            "m+": date.getMinutes(),
+            "s+": date.getSeconds(), 
+            "q+": Math.floor((date.getMonth() + 3) / 3), 
+            "S": date.getMilliseconds() 
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? ((<any>o)[k]) : (("00" + (<any>o)[k]).substr(("" + (<any>o)[k]).length)));
+                return fmt;
+    }
+
     public static log(x:string){
-        console.log("[Alecto] "+x);
+        AlectoLogger.getInst().log(x)
     }
 
     public static async imageToBase64(url:string){

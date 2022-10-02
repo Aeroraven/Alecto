@@ -37,8 +37,9 @@ export class AlectoSnapshotComponentTaobao extends AlectoComponent{
             let containerEl = <HTMLElement>document.getElementsByClassName("tb-revbd")[0];
             
             //Convert To DataURLS
+            AlectoRuntimeUtils.log("Converting image sources to data URL...")
             let iterateChildren = async (e:HTMLElement)=>{
-                AlectoRuntimeUtils.log("Finding children images:"+e)
+                //AlectoRuntimeUtils.log("Finding children images:"+e)
                 for(let i=0;i<e.children.length;i++){
                     if(e.children[i].tagName.toLowerCase() == "img" || e.children[i].tagName.toLowerCase() == "image"){
                         let ke = e.children[i]
@@ -56,7 +57,7 @@ export class AlectoSnapshotComponentTaobao extends AlectoComponent{
                 }   
             }
             await iterateChildren(containerEl)
-
+            AlectoRuntimeUtils.log("Capturing Snapshot: Page "+index)
             let canv = await html2canvas(containerEl);
             let b64 = canv.toDataURL('image/png', 1.0).replace(/^data:image\/(png|jpg);base64,/, "");
             folder!.file(index+".jpg",b64,{base64:true});

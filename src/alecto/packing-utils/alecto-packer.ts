@@ -28,12 +28,14 @@ export class AlectoPacker extends AlectoComponent{
                 progress: i/abstractImgs.length
             } 
             this.doCallback(cb)
+            AlectoRuntimeUtils.log("Fetching abstract resource:"+abstractImgs[i]);
             let x = await AlectoRuntimeUtils.fetchBlob(abstractImgs[i]);
+                   
             await AlectoRuntimeUtils.sleep(100)
             size+=x.size;
             folder!.file(i+".jpg",x);
         }
-
+        let pfolder = this.zip.folder("Comments")!
         for(let i=0;i<analyzedResult.length;i++){
             AlectoRuntimeUtils.log("Gathering resource, at index:"+i+" / "+analyzedResult.length);
             
@@ -44,7 +46,7 @@ export class AlectoPacker extends AlectoComponent{
             }else{
                 prefix = "Multimedia";
             }
-            let folder = this.zip.folder(prefix+"-"+el.date+"-"+el.user);
+            let folder = pfolder.folder(prefix+"-"+el.date+"-"+el.user);
             const assertValidFolder = (x:typeof folder):x is JSZip =>{
                 if(x==null){
                     return false
@@ -103,7 +105,7 @@ export class AlectoPacker extends AlectoComponent{
         await this.execute(true);
         AlectoRuntimeUtils.log("Generating Zip")
         let content = await this.zip.generateAsync({type:"blob"});
-        AlectoRuntimeUtils.log("Get Name")
+        AlectoRuntimeUtils.log("Getting Bundle Name")
         let data = document.getElementsByTagName("title")[0].innerHTML
         
         AlectoRuntimeUtils.download(content, data+".zip");

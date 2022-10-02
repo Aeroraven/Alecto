@@ -1,6 +1,8 @@
 import { AlectoAssets } from "../asset/alecto-assets";
 import { AlectoComponent } from "../core/alecto-component";
 import { AlectoGlobal } from "../core/alecto-global";
+import { AlectoLogger } from "../core/alecto-logger";
+import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
 
 export enum AlectoUIInjectorSbtn{
     AUIS_SHOW = 1,
@@ -47,7 +49,7 @@ export class AlectoUIInjector extends AlectoComponent{
         w.style.zIndex = "114514191"; //?
         w.id = "alecto-wrapper"
         w.innerHTML = g.lang.startup;
-        w.style.height = "40px";
+        w.style.height = "200px";
         w.style.backgroundColor = "#0b0b0b";
         w.style.color = "#e3e3e3";
         w.style.fontWeight = "bold";
@@ -63,6 +65,17 @@ export class AlectoUIInjector extends AlectoComponent{
         document.body.appendChild(w);
         this.bannerObject = w;
         this.setupBannerPost(g.lang.startup);
+        AlectoRuntimeUtils.periodicCheck(()=>{
+            let w = (document.getElementById("alecto-log-op"))
+            return w == null || w == undefined
+        })
+        this.setLoggerSync()
+    }
+    private setLoggerSync = ()=>{
+        setInterval(()=>{
+            let w = <HTMLTextAreaElement>(document.getElementById("alecto-log-op"))
+            w.value = AlectoLogger.getInst().getLog()
+        },500)
     }
     private setupBannerPost = (x:string)=>{
         let g = AlectoGlobal.getInst()
@@ -72,12 +85,11 @@ export class AlectoUIInjector extends AlectoComponent{
             
             <style>
                 .alecto-btn{
-                    background-color:#76ddff;
+                    background-color:#10b2ff;
                     color:#000000;
-                    border-radius:3px;
-                    padding-left:11px;
+                    padding-left:14px;
                     padding-top:6px;
-                    padding-right:11px;
+                    padding-right:14px;
                     padding-bottom:6px;
                     margin-left:12px;
                 }
@@ -112,9 +124,90 @@ export class AlectoUIInjector extends AlectoComponent{
                     top:0px;
                     transition:all 1s;
                 }
+
+                .alecto-hr{
+                    background-color:#444444;
+                    height:2px;
+                    position:fixed;
+                    left:25px;
+                    right:25px;
+                    top:60px;
+                    transition:all 1s;
+                    z-index:2;
+                }
+                .alecto-hr-top{
+                    background-color:#10b2ff;
+                    height:2px;
+                    position:fixed;
+                    left:25px;
+                    width: 10%;
+                    top:60px;
+                    transition:all 1s;
+                    z-index:3;
+                }
+                .alecto-grid{
+                    height:100px;
+                    display:inline-block;
+                    vertical-align:top;
+                }
+                .alecto-detail-container{
+                    margin-top:30px;
+                    width:95%;
+                }
+                .alecto-tasklist-container{
+                    width:15%;
+                }  
+                .alecto-taskdetail-container{
+                    width:80%;
+                    margin-left:60px;
+                }
+                #alecto-log-op{
+                    width:100%;
+                    background-color: #0b0b0b;
+                    border:none;
+                    color: #efefef;
+                    height:100px;
+                }
+                .alecto-inprog{
+                    width:100%;
+                    height:30px;
+                    border: 1px solid #10b2ff;
+                    background-color:#10b2ff;
+                    color:#0b0b0b;
+                    padding-left: 20px;
+                    padding-top:5px;
+                    margin-bottom:15px;
+                }
+                .alecto-serial{
+                    font-family:'Geometos';
+                }
+
+                .alecto-prog-next{
+                    width:100%;
+                    height:30px;
+                    border: 1px solid #10b2ff;
+                    background-color:#0b0b0b;
+                    color:#10b2ff;
+                    padding-left: 20px;
+                    padding-top:5px;
+                    margin-bottom:15px;
+                }
+                textarea::-webkit-scrollbar {
+                    width: 4px;    
+                }
+                textarea::-webkit-scrollbar-thumb {
+                    border-radius: 10px;
+                    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+                    background: #10b2ff;
+                }
+                textarea::-webkit-scrollbar-track {
+                    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+                    border-radius: 0;
+                    background: rgba(0,0,0,0.1);
+        
+                }
             </style>
             <div class='alecto-progressbar' id='alecto-progressbar' style='width:`+this.bannerProg+`%;'>
-                
             </div>
         `;
         let inj = "";
@@ -133,6 +226,34 @@ export class AlectoUIInjector extends AlectoComponent{
         inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='alert("by Aeroraven. Version `+g.version+`. Repo:https://github.com/Aeroraven/Alecto");window.alecto.confirm()'>`+g.lang.about+`</a>`;
         //inj += `  <a class="alecto-btn" href='javascript:void(0)' onclick='window.alecto.setLang("en")'>English</a>`;
         inj += "</span>";
+
+        //v0.2e
+        inj += `
+        <div class='alecto-hr'> </div>
+        <div class='alecto-hr-top'> </div>
+        <div class='alecto-detail-container'>
+            <div class="alecto-grid alecto-tasklist-container">
+                <div class="alecto-inprog">
+                    <span class="alecto-serial">
+                        #01 |
+                    </span>
+                    进行中的任务
+                </div>
+                <div class="alecto-prog-next">
+                    <span class="alecto-serial">
+                        #02 |
+                    </span>
+                    空闲栏位
+                </div>
+            </div>
+
+
+            <div class="alecto-grid alecto-taskdetail-container">
+                <b style='margin-bottom:3px;'>当前进度:</b><br/>
+                <textarea id='alecto-log-op'></textarea>
+            </div>
+        </div>
+        `
         w.innerHTML = inj;
     };
 }

@@ -16,7 +16,7 @@ export class AlectoUIAboutInjector extends AlectoComponent{
         w.id = "alecto-about-popup"
         w.style.width = "50%";
         w.style.height = "50%";
-        w.style.marginTop = "-15%";
+        w.style.marginTop = "-10%";
         w.style.marginLeft = "-25%";
         w.style.left = "50%";
         w.style.top = "50%";
@@ -84,8 +84,8 @@ export class AlectoUIAboutInjector extends AlectoComponent{
                         2. 脚本将访问您的敏感信息，如Cookie等。但不会将其存储、上传。<br/>
                         3. 脚本的使用可能违反您和当前网页提供者签订的用户协议，作者不对此造成的后果承担责任<br/>
                         4. 请勿将此脚本运用于非法用途<br/>
-                        5. 软件代码本体使用MIT开源协议，您可以按照协议要求修改复制分发，并且用于商业用途，作者不承担责任。<br/>
-                        6. 软件扩展部分和UI引用部分资源使用CC4.0-BY-NC或类似协议，将软件用于商用时，需要排除这些部分。<br/>
+                        5. 软件代码本体使用MIT开源协议，您可以按照协议要求修改复制分发，并且用于商业用途，<br/>作者不承担责任。<br/>
+                        6. 软件扩展部分和UI引用部分资源使用CC4.0-BY-NC或类似协议，将软件用于商用时，<br/>需要排除这些部分。<br/>
                         7. 不同意可以在Tamper Monkey选项卡中关闭本脚本。
                         <br/>
                         代码地址: https://github.com/Aeroraven/Alecto

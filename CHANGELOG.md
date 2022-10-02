@@ -75,20 +75,24 @@
 
 **EN**
 
+- New: Refined UI & Displaying logs
 - New: Added about page
-- New: Support for Simplified Chinese encoding
+- New: Added support for Simplified Chinese encoding
 - New: Comment snapshots handler will capture cross-origin images on TAOBAO platform
   - This action is destructive for the page.
-- Change: Remove legacy scripts 
-- Change: Deprecates launcher
+- Change: Removed legacy scripts 
+- Change: Deprecated launcher
+- Bug Fix: Tamper Monkey injection might be triggered in non-showcase pages
 
 
 
 **CN**
 
+- 增加：UI优化 & 显示当前进度日志
 - 增加：关于页面
 - 增加：支持中文(GBK编码)
 - 增加：截图组件将支持对`TAOBAO`评论区的所有跨域图片的获取
   - 该操作将对浏览页面进行破坏性操作
 - 修改：移除遗留脚本
 - 修改：对启动器标记弃用
+- 修复：在非橱窗页面注入脚本的问题
