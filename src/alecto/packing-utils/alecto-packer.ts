@@ -7,6 +7,10 @@ import { AlectoProgressCallback } from '../core/alecto-progress-callback';
 import { AlectoGlobal } from '../core/alecto-global';
 
 export class AlectoPacker extends AlectoComponent{
+    //Attributes
+    static readonly SOURCE_ANALYZED_COMMENTS = "ALP_SAC"
+    static readonly SOURCE_ABSTRACT_IMGS = "ALP_AIMS"
+
     zip:JSZip
     constructor(){
         super()
@@ -101,14 +105,14 @@ export class AlectoPacker extends AlectoComponent{
             progress: 1
         } 
         this.doCallback(cb);
+        return this.zip
+    }
 
-        await this.execute(true);
-        AlectoRuntimeUtils.log("Generating Zip")
-        let content = await this.zip.generateAsync({type:"blob"});
-        AlectoRuntimeUtils.log("Getting Bundle Name")
-        let data = document.getElementsByTagName("title")[0].innerHTML
-        
-        AlectoRuntimeUtils.download(content, data+".zip");
+    protected async executeSelf(): Promise<void> {
+        let a0 = <AlectoAnalyzedCommentFormat[]> this.getAttribute(AlectoPacker.SOURCE_ANALYZED_COMMENTS)
+        let a1 = <string[]> this.getAttribute(AlectoPacker.SOURCE_ABSTRACT_IMGS)
+        let r = await this.createZip(a0,a1)
+        this.setStdReturn(r)
     }
 
 

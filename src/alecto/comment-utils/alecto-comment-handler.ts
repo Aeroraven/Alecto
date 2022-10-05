@@ -20,6 +20,11 @@ export abstract class AlectoCommentHandler extends AlectoComponent{
     public abstract  locateJsonpAddress(): string;
     public async findJsonpBody():Promise<AlectoCommentFormat[]> {return []}
     public abstract simStartup():void;
-    public abstract detectAbstracts():string[];
     public extraHooks():void {}
+
+    protected async executeSelf(): Promise<void> {
+        this.simStartup()
+        let r = await this.findJsonpBody()
+        this.setStdReturn(r)
+    }
 }

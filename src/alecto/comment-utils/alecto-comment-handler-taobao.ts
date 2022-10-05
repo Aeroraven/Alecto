@@ -5,21 +5,7 @@ import { AlectoJSONPInjector } from "../injector/alecto-jsonp-injector";
 import { AlectoCommentFormat, AlectoCommentHandler } from "./alecto-comment-handler";
 
 export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
-    public detectAbstracts(): string[] {
-        let rets = [];
-        let w =  document.getElementById("J_DivItemDesc")!.children[0].children;
-        for(let i=0;i<w.length;i++){
-            if(w[i].localName == 'img'){
-                if('data-ks-lazyload' in w[i].attributes){
-                    rets.push(w[i].attributes.getNamedItem('data-ks-lazyload')!.value);
-                }else{
-                    rets.push(w[i].attributes.getNamedItem('src')!.value);
-                }
-            }
-        }
-        console.log(rets);
-        return rets;
-    }
+    
     
     public simStartup(): void {
         let btns = document.getElementsByClassName('tb-tab-anchor');
@@ -89,7 +75,8 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                 date: string
                 content: string
                 user: string
-                photos: unknown[] 
+                photos: unknown[],
+                
             }
             const nodeCheck = (x:any):x is ACHRegularRespbody=>{
                 if(x==undefined||x==null){
@@ -109,7 +96,10 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                     photos: {url:string}[],
                     video: ({cloudVideoUrl:string}|null),
                     user: {nick:string},
-                    content:string
+                    content:string,
+                    appendList:{
+                        content:string
+                    }[]
                 }
                 respBody.comments.forEach((element)=>{
                     const elementCheck = (x:any):x is ACHCommentElement=>{
@@ -142,6 +132,13 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                             content:""
                         }
                         contentIns.content = element.content;
+                        contentIns.content += (()=>{
+                            let w = ""
+                            element.appendList.forEach((el)=>{
+                                w+="Append:"+el.content+"\n"
+                            })
+                            return w
+                        })()
                         contentIns.user = element.user.nick;
                         contentIns.date = element.date;
                         contentIns.videos = (()=>{

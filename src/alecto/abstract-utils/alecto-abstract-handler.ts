@@ -1,8 +1,11 @@
 import { AlectoComponent } from "../core/alecto-component";
 
-export class AlectoAbstractHandler extends AlectoComponent{
+export abstract class AlectoAbstractHandler extends AlectoComponent{
     
-    public detectAbstracts():string[] {
-        return []
+    public abstract detectAbstracts():string[]; 
+
+    protected async executeSelf(): Promise<void> {
+        let r = this.detectAbstracts()
+        this.setStdReturn(r)
     }
 }

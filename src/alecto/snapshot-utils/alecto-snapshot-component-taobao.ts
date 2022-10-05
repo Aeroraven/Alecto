@@ -2,10 +2,14 @@ import html2canvas from "html2canvas";
 import JSZip from "jszip";
 import { AlectoComponent } from "../core/alecto-component";
 import { AlectoGlobal } from "../core/alecto-global";
+import { AlectoLogger } from "../core/alecto-logger";
 import { AlectoProgressCallback } from "../core/alecto-progress-callback";
 import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
+import { AlectoSnapshotComponentBase } from "./alecto-snapshot-component-base";
 
-export class AlectoSnapshotComponentTaobao extends AlectoComponent{
+export class AlectoSnapshotComponentTaobao extends AlectoSnapshotComponentBase{
+    
+
     z:JSZip
     constructor(){
         super()
@@ -22,12 +26,36 @@ export class AlectoSnapshotComponentTaobao extends AlectoComponent{
         let index = 0;
         let folder = zip.folder("Snapshots");
         let g = AlectoGlobal.getInst()
-        let cb:AlectoProgressCallback={
-            status: g.lang.snapshot+" (Page:"+index+")",
-            progress: Math.min(index,10)/10
-        }
-        this.doCallback(cb);
+        
         while(true){
+            //UI Callback
+            let cb:AlectoProgressCallback={
+                status: g.lang.snapshot+" (Page:"+index+")",
+                progress: Math.min(index,10)/10
+            }
+            this.doCallback(cb);
+
+            //Find Retry
+            let retryBtns = document.getElementsByClassName("J_KgRate_Retry_List").length;
+            if(retryBtns>0){
+                let gp = document.getElementsByClassName("J_KgRate_Retry_List");
+                AlectoLogger.getInst().log("Request failure detected. Resolving...")
+                
+                for(let i=0;i<gp.length;i++){
+                    (<HTMLElement>gp[i]).click()
+                }
+                await AlectoRuntimeUtils.sleep(5000);
+                continue
+            }
+
+            //Find Loading
+            retryBtns = document.getElementsByClassName("kg-loading").length;
+            if(retryBtns>0){
+                AlectoLogger.getInst().log("Comments are being loaded. Postponing inspection...")
+                await AlectoRuntimeUtils.sleep(5000);
+                continue
+            }
+            
             nextBtnS = document.getElementsByClassName("pg-next");
             if(nextBtnS.length!=0){
                 nextBtn = <HTMLElement>nextBtnS[0];
@@ -69,13 +97,15 @@ export class AlectoSnapshotComponentTaobao extends AlectoComponent{
             }
             
             nextBtn.click();
-            AlectoRuntimeUtils.sleep(5000);
+            await AlectoRuntimeUtils.sleep(5000);
             index++;
         }
         folder!.file("note.txt",g.lang.cors);
     }
-    public async executeSelf(): Promise<void> {
-        await this.captureSnapshot(this.z)
+    protected async executeSelf(): Promise<void> {
+        let a0 = this.getAttribute(AlectoSnapshotComponentTaobao.SOURCE_BUNDLE)
+        await this.captureSnapshot(a0)
+        this.setStdReturn(a0)
     }
     public setZip(x:JSZip){
         this.z = x

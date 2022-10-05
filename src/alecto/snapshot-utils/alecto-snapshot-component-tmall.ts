@@ -4,8 +4,9 @@ import { AlectoComponent } from "../core/alecto-component";
 import { AlectoGlobal } from "../core/alecto-global";
 import { AlectoProgressCallback } from "../core/alecto-progress-callback";
 import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
+import { AlectoSnapshotComponentBase } from "./alecto-snapshot-component-base";
 
-export class AlectoSnapshotComponentTmall extends AlectoComponent{
+export class AlectoSnapshotComponentTmall extends AlectoSnapshotComponentBase{
     z:JSZip
     constructor(){
         super()
@@ -14,7 +15,7 @@ export class AlectoSnapshotComponentTmall extends AlectoComponent{
     public async captureSnapshot(zip:JSZip){
         //TODO
     }
-    public async executeSelf(): Promise<void> {
+    protected async executeSelf(): Promise<void> {
         await this.captureSnapshot(this.z)
     }
     public setZip(x:JSZip){

@@ -1,10 +1,15 @@
 import { pack } from "html2canvas/dist/types/css/types/color";
+import { AlectoAbstractHandler } from "../abstract-utils/alecto-abstract-handler";
+import { AlectoAbstractHandlerTaobao } from "../abstract-utils/alecto-abstract-handler-taobao";
+import { AlectoAbstractHandlerTmall } from "../abstract-utils/alecto-abstract-handler-tmall";
+import { AlectoAbstractHandlerTmallV8 } from "../abstract-utils/alecto-abstract-handler-tmall-v8";
 import { AlectoCommentAnalyzer } from "../comment-utils/alecto-comment-analyzer";
 import { AlectoCommentHandler } from "../comment-utils/alecto-comment-handler";
 import { AlectoCommentHandlerTaobao } from "../comment-utils/alecto-comment-handler-taobao";
 import { AlectoCommentHandlerTmall } from "../comment-utils/alecto-comment-handler-tmall";
 import { AlectoCommentHandlerTmallV8 } from "../comment-utils/alecto-comment-handler-tmall-v8";
 import { AlectoComponent } from "../core/alecto-component";
+import { AlectoComponentUtil } from "../core/alecto-component-util";
 import { AlectoGlobal, AlectoGlobalPlatform } from "../core/alecto-global";
 import { AlectoProgressCallback } from "../core/alecto-progress-callback";
 import { AlectoRuntime } from "../core/alecto-runtime";
@@ -12,6 +17,8 @@ import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
 import { AlectoLang_enUS } from "../localization/alecto-lang-en-us";
 import { AlectoLang_zhCN } from "../localization/alecto-lang-zh-cn";
 import { AlectoPacker } from "../packing-utils/alecto-packer";
+import { AlectoPackerSaver } from "../packing-utils/alecto-packer-saver";
+import { AlectoSnapshotComponentBase } from "../snapshot-utils/alecto-snapshot-component-base";
 import { AlectoSnapshotComponentTaobao } from "../snapshot-utils/alecto-snapshot-component-taobao";
 import { AlectoSnapshotComponentTmall } from "../snapshot-utils/alecto-snapshot-component-tmall";
 import { AlectoUIAboutInjector } from "../ui/alecto-ui-about-injector";
@@ -30,7 +37,7 @@ export class AlectoWorker extends AlectoComponent{
         super()
         this.ui = new AlectoUIInjector();
     }
-    public async executeSelf(): Promise<void> {
+    protected async executeSelf(): Promise<void> {
         let ag =  AlectoGlobal.getInst();
         let runtime = new AlectoRuntime();
         let language = AlectoLang_zhCN;
@@ -40,11 +47,11 @@ export class AlectoWorker extends AlectoComponent{
         sui.setup()
 
         //Initialize
-        runtime.executeSelf()
+        runtime.executeExternal()
         ag.lang = language
 
         //Setup UI
-        this.ui.setupBanner();
+        await this.ui.setupBanner();
 
         //Expose 
         ag.env.alecto = this;
@@ -84,6 +91,8 @@ export class AlectoWorker extends AlectoComponent{
         },200)
         this.ui.setBannerInfo(ag.lang.initdone,AlectoUIInjectorSbtn.AUIS_SHOW);
         AlectoRuntimeUtils.log("Initialization is done.");
+
+        this.ui.setBannerTask("等待开始","任务开始")
     }
     public confirm(){
         let g = AlectoGlobal.getInst()
@@ -114,14 +123,30 @@ export class AlectoWorker extends AlectoComponent{
         }
     }
 
+    public getAbstractHandlerType(){
+        let g = AlectoGlobal.getInst()
+        if(g.platform == AlectoGlobalPlatform.AGP_TAOBAO){
+            return AlectoAbstractHandlerTaobao
+        }
+        else if(g.platform == AlectoGlobalPlatform.AGP_TMALL){
+            return AlectoAbstractHandlerTmall
+        }
+        else if(g.platform == AlectoGlobalPlatform.AGP_TMALLV8){
+            return AlectoAbstractHandlerTmallV8
+        }else{
+            return AlectoAbstractHandlerTaobao
+        }
+    }
+
     public async run(){
         let g =  AlectoGlobal.getInst();
+        let abstractHanlder:AlectoAbstractHandler = new (this.getAbstractHandlerType())();
         let commentCrawler: AlectoCommentHandler = new (this.getCrawlerType())();
         let commentAnalyzer: AlectoCommentAnalyzer = new AlectoCommentAnalyzer();
         let packer: AlectoPacker = new AlectoPacker()
         let snapshotCom = new (this.getSnapshotComType())();
+        let packSaver = new AlectoPackerSaver()
         
-        //Setup callbacks
         commentCrawler.setCallback((x:any)=>{
             const tg = (xs:any):xs is AlectoProgressCallback =>{
                 return true;
@@ -158,31 +183,43 @@ export class AlectoWorker extends AlectoComponent{
             }
         })
         
+        AlectoComponentUtil.flowDefine(abstractHanlder,packer,AlectoPacker.SOURCE_ABSTRACT_IMGS)
+        AlectoComponentUtil.flowDefine(commentAnalyzer,packer,AlectoPacker.SOURCE_ANALYZED_COMMENTS)
+        AlectoComponentUtil.flowDefine(commentCrawler,commentAnalyzer, AlectoCommentAnalyzer.SOURCE_COMMENTS)
+        AlectoComponentUtil.flowDefine(packer,snapshotCom,AlectoSnapshotComponentBase.SOURCE_BUNDLE)
+        AlectoComponentUtil.flowDefine(snapshotCom,packSaver,AlectoPackerSaver.SOURCE_BUNDLE);
+
+        interface IAlectoWorkerFlow{
+            uiIns:string,
+            uiPr:number,
+            component: AlectoComponent|null,
+            taskAbstract:string
+        }
+
+        let flows:IAlectoWorkerFlow[] = [
+            {uiIns:g.lang.starts,uiPr:5,component:abstractHanlder,taskAbstract:"摘要抓取"},
+            {uiIns:g.lang.loadComments,uiPr:10,component:commentCrawler,taskAbstract:"评论爬取"},
+            {uiIns:g.lang.loadComments,uiPr:30,component:commentAnalyzer,taskAbstract:"评论分析"},
+            {uiIns:"Downloading Resources",uiPr:30,component:packer,taskAbstract:"资源下载"},
+            {uiIns:"Capturing Snapshots",uiPr:80,component:snapshotCom,taskAbstract:"评论截图"},
+            {uiIns:"Saving Bundle",uiPr:95,component:packSaver,taskAbstract:"结果打包"},
+            {uiIns:g.lang.alldone,uiPr:100,component:null,taskAbstract:"任务结束"},
+        ]
+
         try {
-            //Start
-            this.ui.setBannerInfo(g.lang.starts,AlectoUIInjectorSbtn.AUIS_HIDE);
-            this.ui.setBannerProg(5)
-            
-            //Abstract
-            let abstracts = commentCrawler.detectAbstracts();
+            for(let i=0;i<flows.length;i++){
+                //UI
+                let wg = (i==flows.length-1)?"无任务":flows[i+1].taskAbstract+"("+(i+2)+"/"+flows.length+")"
+                this.ui.setBannerTask(flows[i].taskAbstract+"("+(i+1)+"/"+flows.length+")",wg)
+                this.ui.setBannerInfo(flows[i].uiIns,AlectoUIInjectorSbtn.AUIS_HIDE);
+                this.ui.setBannerProg(flows[i].uiPr)
 
-            //Comment Crawl
-            this.ui.setBannerInfo(g.lang.loadComments,AlectoUIInjectorSbtn.AUIS_HIDE);
-            this.ui.setBannerProg(10)
-            commentCrawler.simStartup();
-
-            //Find All Comments
-            let respBody = await commentCrawler.findJsonpBody();
-
-            //Analyze Comments
-            let analyzedBody = commentAnalyzer.analyzeComments(respBody);
-
-            //Snapshot Components
-            snapshotCom.setZip(packer.zip)
-            packer.addChild(snapshotCom)
-
-            //Packing
-            await packer.createZip(analyzedBody,abstracts);
+                //Exec
+                if(flows[i].component!=null){
+                    await flows[i].component!.executeExternal()
+                }
+                
+            }
 
             this.ui.setBannerInfo(g.lang.alldone,AlectoUIInjectorSbtn.AUIS_SHOW);
             this.ui.setBannerProg(100)

@@ -39,7 +39,7 @@ export class AlectoUIInjector extends AlectoComponent{
     public detachBanner(){
         this.bannerObject.style.display = "none"
     }
-    public setupBanner(){
+    public async setupBanner(){
         let g = AlectoGlobal.getInst()
         let w = document.createElement("div");
         w.style.position = "fixed";
@@ -65,24 +65,33 @@ export class AlectoUIInjector extends AlectoComponent{
         document.body.appendChild(w);
         this.bannerObject = w;
         this.setupBannerPost(g.lang.startup);
-        AlectoRuntimeUtils.periodicCheck(()=>{
+        await AlectoRuntimeUtils.periodicCheck(()=>{
             let w = (document.getElementById("alecto-log-op"))
-            return w == null || w == undefined
-        })
+            return !(w == null || w == undefined)
+        },100)
         this.setLoggerSync()
     }
     private setLoggerSync = ()=>{
         setInterval(()=>{
             let w = <HTMLTextAreaElement>(document.getElementById("alecto-log-op"))
             w.value = AlectoLogger.getInst().getLog()
+
+            let s = <HTMLElement>(document.getElementById('alecto-pcounter'))
+            s.innerHTML = Math.ceil(this.bannerProg)+"%"
         },500)
+    }
+
+    public setBannerTask(cur:string,nxt:string){
+        let c = document.getElementById('alecto-curt')
+        let n = document.getElementById('alecto-nxtt')
+        c!.innerHTML = cur
+        n!.innerHTML = nxt
     }
     private setupBannerPost = (x:string)=>{
         let g = AlectoGlobal.getInst()
         let w = this.bannerObject;
         let asset = AlectoAssets.getInst();
         let styleInject = `
-            
             <style>
                 .alecto-btn{
                     background-color:#10b2ff;
@@ -176,7 +185,8 @@ export class AlectoUIInjector extends AlectoComponent{
                     color:#0b0b0b;
                     padding-left: 20px;
                     padding-top:5px;
-                    margin-bottom:15px;
+                    margin-bottom:7px;
+                    margin-top:7px;
                 }
                 .alecto-serial{
                     font-family:'Geometos';
@@ -191,6 +201,7 @@ export class AlectoUIInjector extends AlectoComponent{
                     padding-left: 20px;
                     padding-top:5px;
                     margin-bottom:15px;
+                    margin-top:7px;
                 }
                 textarea::-webkit-scrollbar {
                     width: 4px;    
@@ -214,6 +225,7 @@ export class AlectoUIInjector extends AlectoComponent{
         
         inj += `
             <span class='alecto-title'>Alecto</span>
+            <span class='alecto-title' id='alecto-pcounter'>50%</span>
         `;
         inj += styleInject;
 
@@ -235,15 +247,18 @@ export class AlectoUIInjector extends AlectoComponent{
             <div class="alecto-grid alecto-tasklist-container">
                 <div class="alecto-inprog">
                     <span class="alecto-serial">
-                        #01 |
+                        NOW&nbsp; |
                     </span>
-                    进行中的任务
+                    <span id="alecto-curt">进行的任务</span>
+                </div>
+                <div style='width:100%;text-align:center'>
+                ▼ ▼ ▼
                 </div>
                 <div class="alecto-prog-next">
                     <span class="alecto-serial">
-                        #02 |
+                        NEXT |
                     </span>
-                    空闲栏位
+                    <span id="alecto-nxtt">后续任务</span>
                 </div>
             </div>
 

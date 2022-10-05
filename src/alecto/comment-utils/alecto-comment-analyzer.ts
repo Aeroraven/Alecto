@@ -10,6 +10,9 @@ export interface AlectoAnalyzedCommentFormat{
 }
 
 export class AlectoCommentAnalyzer extends AlectoComponent{
+    //Attribute
+    static readonly SOURCE_COMMENTS = "ALCA_SOURCE_COMMENT"; 
+
     public analyzeComments(commentObject:AlectoCommentFormat[]):AlectoAnalyzedCommentFormat[]{
         let exportedObjectList:AlectoAnalyzedCommentFormat[] = [];
         commentObject.forEach((el)=>{
@@ -41,4 +44,10 @@ export class AlectoCommentAnalyzer extends AlectoComponent{
         });
         return exportedObjectList;
     };
+
+    protected async executeSelf(): Promise<void> {
+        let src = <AlectoCommentFormat[]>this.getAttribute(AlectoCommentAnalyzer.SOURCE_COMMENTS)
+        let r = this.analyzeComments(src)
+        this.setStdReturn(r)
+    }
 }

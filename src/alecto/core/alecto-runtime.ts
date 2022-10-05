@@ -76,7 +76,7 @@ export class AlectoRuntime extends AlectoComponent{
         AlectoRuntimeUtils.log("Emitting assets")
     }
 
-    public async executeSelf(){
+    protected async executeSelf(){
         this.initEnv();
         this.recoverNativeMethods();
         this.platformDetect();
