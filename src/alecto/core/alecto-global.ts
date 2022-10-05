@@ -87,7 +87,7 @@ export class AlectoGlobal{
     }
 
     get about(){
-        return "This software is licensed under MIT License. You can freely use, modify and distribute it for commercial or personal use. "
+        return "This software is licensed under AGPL3.0 License. You can freely use, modify and distribute it for commercial or personal use. "
     }
 
     get document(){
