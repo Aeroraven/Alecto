@@ -62,4 +62,4 @@ A user-script to gather data for sellers on some e-shopping platforms
 
 ### # 许可 / License
 
-MIT
+AGPL 3.0
