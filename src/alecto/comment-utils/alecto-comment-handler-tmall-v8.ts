@@ -4,6 +4,7 @@ import { AlectoProgressCallback } from "../core/alecto-progress-callback";
 import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
 import { AlectoJSONPInjector } from "../injector/alecto-jsonp-injector";
 import { AlectoCommentFormat, AlectoCommentHandler } from "./alecto-comment-handler";
+import { alectoNMGetXHROpenLists,alectoNMInjectNativeMethods} from "../../alecto-external/alecto-native-monitor/alecto-natm"
 
 export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
     public extraHooks(): void {
@@ -22,23 +23,13 @@ export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
     }
 
     public locateJsonpAddress(): string {
-        let htmlHead = document.getElementsByTagName("head")[0].childNodes;
-        let destAddr = "";
-        interface ACHNode{
-            src:string
-        }
-        htmlHead.forEach((el)=>{
-            const nodeCheck = (x:any):x is ACHNode=>{
-                if(x==undefined||x==null){
-                    return false;
-                }
-                return typeof x.src == "string";
-            }
-            if(nodeCheck(el)){
-                let matchDest = /mtop\.alibaba\.review\.list\.for\.new\.pc\.detail/g;
-                if(el.src.match(matchDest)!=null){
-                    destAddr = el.src;
-                }
+        alectoNMInjectNativeMethods()
+        let potential_cands = alectoNMGetXHROpenLists()
+        let destAddr = ""
+        potential_cands.forEach((el)=>{
+            let matchDest = /mtop\.alibaba\.review\.list\.for\.new\.pc\.detail/g;
+            if(el.match(matchDest)!=null){
+                destAddr = el;
             }
         });
         AlectoRuntimeUtils.log("Find comment JSONP URI:"+destAddr);
@@ -83,9 +74,10 @@ export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
             //rpUri = encodeURIComponent(rpUri)
 
             //Update URI
-            AlectoRuntimeUtils.log("Initiating JSONP Request:"+rpUri);
-            let respBody = await injector.inject(rpUri);
-            
+            AlectoRuntimeUtils.log("Initiating Fetch Request:"+rpUri);
+            //let respBody = await injector.inject(rpUri);
+            let respBody = JSON.parse(await AlectoRuntimeUtils.fetchText(rpUri));
+            console.log(respBody)
             //Callback
             let cb:AlectoProgressCallback = {
                 status: g.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",

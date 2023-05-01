@@ -122,7 +122,7 @@ export class AlectoRuntimeUtils{
     }
 
     public static async fetchText(url:string){
-        let response = await window.fetch(url);
+        let response = await window.fetch(url,{credentials:"include"});
         return await response.text();
     };
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Alecto
 // @namespace    https://github.com/Aeroraven/Alecto/
-// @version      0.2c
+// @version      0.3b
 // @description  Alecto Userscript
 // @author       Aeroraven
 // @include      *taobao*

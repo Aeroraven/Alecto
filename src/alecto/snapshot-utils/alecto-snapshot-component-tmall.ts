@@ -16,7 +16,9 @@ export class AlectoSnapshotComponentTmall extends AlectoSnapshotComponentBase{
         //TODO
     }
     protected async executeSelf(): Promise<void> {
-        await this.captureSnapshot(this.z)
+        let a0 = this.getAttribute(AlectoSnapshotComponentTmall.SOURCE_BUNDLE)
+        await this.captureSnapshot(a0)
+        this.setStdReturn(a0)
     }
     public setZip(x:JSZip){
         this.z = x

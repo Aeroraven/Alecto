@@ -30,6 +30,7 @@ The script will launch automatically
 Install `Node.js`, then execute
 
 ```shell
+npm install -g uglify-js
 npm install
 ```
 

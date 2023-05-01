@@ -10,7 +10,7 @@ let w = base64_encode('./dist/alecto.min.js')
 let h = `// ==UserScript==
 // @name         Alecto
 // @namespace    https://github.com/Aeroraven/Alecto/
-// @version      0.3a
+// @version      0.3b
 // @description  Alecto Userscript
 // @author       Aeroraven
 // @include      https://item.taobao.*/*

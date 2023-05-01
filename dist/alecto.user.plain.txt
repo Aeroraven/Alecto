@@ -6,6 +6,7 @@
 // @author       Aeroraven
 // @include      https://item.taobao.*/*
 // @include      https://detail.tmall.*/*
+// @include      https://chaoshi.detail.tmall.*/*
 // @grant        unsafeWindow
 // @grant        GM_download
 // ==/UserScript==

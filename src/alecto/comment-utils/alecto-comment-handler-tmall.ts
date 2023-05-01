@@ -62,7 +62,8 @@ export class AlectoCommentHandlerTmall extends AlectoCommentHandler{
         let injector = new AlectoJSONPInjector();
         while(true){
             let rpUri = uri.replace(/currentPage.?[0-9]+/,"currentPage="+curIndex);
-            let respBody = await injector.inject(rpUri);
+            //let respBody = await injector.inject(rpUri);
+            let respBody = await AlectoRuntimeUtils.fetchText(rpUri)
             AlectoRuntimeUtils.log("Initiating JSONP Request:"+rpUri);
             //Callback
             let cb:AlectoProgressCallback = {

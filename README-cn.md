@@ -2,6 +2,14 @@
 A user-script to gather data for sellers on some e-shopping platforms
 
 
+### # 注意事项 / Notice
+
+- 脚本将对您当前浏览的网页进行破坏性且不可逆的操作，请不要使用当前网页进行敏感操作。包括但不仅限于：
+   - 部分DOM操作将被重写，网页的表现可能存在不正常现象
+
+- 脚本将监听当前网页上的敏感信息，包括但不仅限于：
+   - Cookie将被用于计算部分请求的校验码信息
+   - XMLHTTPRequest中的部分方法将被重写，拦截以获取部分链接地址
 
 ### # 要求 / Requirements
 
@@ -13,9 +21,6 @@ A user-script to gather data for sellers on some e-shopping platforms
 - Firefox 版本高于（包含）52
 - Opera 版本高于（包含）42
 - 不支持 Internet Explorer 的任何版本
-
-
-
 
 
 ### # 安装 / Installation

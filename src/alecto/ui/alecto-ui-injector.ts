@@ -167,7 +167,7 @@ export class AlectoUIInjector extends AlectoComponent{
                     width:15%;
                 }  
                 .alecto-taskdetail-container{
-                    width:80%;
+                    width:75%;
                     margin-left:60px;
                 }
                 #alecto-log-op{

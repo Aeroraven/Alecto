@@ -1,4 +1,3 @@
-import { platform } from "os";
 import { AlectoDefaultLang, AlectoLangDefs } from "./alecto-lang-defs";
 
 export enum AlectoRunEnv{
@@ -83,11 +82,11 @@ export class AlectoGlobal{
     }
 
     get version(){
-        return 'v0.3a'
+        return 'v0.3b'
     }
 
     get about(){
-        return "This software is licensed under AGPL3.0 License. You can freely use, modify and distribute it for commercial or personal use. "
+        return "This software is licensed under AGPL3.0 License. You can freely use, modify and distribute it for commercial or personal use under the license. "
     }
 
     get document(){
