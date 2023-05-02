@@ -82,7 +82,7 @@ export class AlectoGlobal{
     }
 
     get version(){
-        return 'v0.3b'
+        return 'v0.3c'
     }
 
     get about(){

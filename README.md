@@ -17,8 +17,6 @@ Use Tamper Monkey to install the script
 
 
 
-
-
 ### # Run
 
 The script will launch automatically
