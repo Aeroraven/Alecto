@@ -6,7 +6,7 @@ A user-script to gather data for sellers on some e-shopping platforms
 
 只支持下列两个浏览器，在其他浏览器上的运行未经过尝试。
 
-- Chrome 或 Chromium内核 版本高于（包含）55 
+- Chrome 版本高于（包含）55 
 - Edge 版本高于（包含）14
 
 
