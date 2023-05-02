@@ -7,6 +7,7 @@ export interface AlectoAnalyzedCommentFormat{
     video: string[],
     content: string,
     user:string,
+    detail:string
 }
 
 export class AlectoCommentAnalyzer extends AlectoComponent{
@@ -21,7 +22,8 @@ export class AlectoCommentAnalyzer extends AlectoComponent{
                 photos: [],
                 video: [],
                 content: "",
-                user: ""
+                user: "",
+                detail:""
             };
             exportedObject.date = el.date;
             exportedObject.photos = (()=>{
@@ -40,6 +42,7 @@ export class AlectoCommentAnalyzer extends AlectoComponent{
             })();
             exportedObject.content = el.content;
             exportedObject.user = el.user;
+            exportedObject.detail = el.detail
             exportedObjectList.push(exportedObject);
         });
         return exportedObjectList;

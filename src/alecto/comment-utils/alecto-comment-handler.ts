@@ -14,6 +14,7 @@ export interface AlectoCommentFormat{
     date: string
     user: string
     content: string
+    detail:string
 }
 
 export abstract class AlectoCommentHandler extends AlectoComponent{

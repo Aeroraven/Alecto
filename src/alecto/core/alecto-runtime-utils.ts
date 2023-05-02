@@ -105,7 +105,7 @@ export class AlectoRuntimeUtils{
             var context = canvas.getContext('2d')
             context!.drawImage(image, 0, 0, image.width, image.height)
             var quality = 0.8
-            var dataURL = canvas.toDataURL("image/jpeg", quality) 
+            var dataURL = canvas.toDataURL() 
             return dataURL;
         }
         let ret = ""

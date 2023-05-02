@@ -32,7 +32,7 @@ export class AlectoPacker extends AlectoComponent{
                 progress: i/abstractImgs.length
             } 
             this.doCallback(cb)
-            AlectoRuntimeUtils.log("Fetching abstract resource:"+abstractImgs[i]);
+            AlectoRuntimeUtils.log(g.lang.gatherAbstract+abstractImgs[i]);
             let x = await AlectoRuntimeUtils.fetchBlob(abstractImgs[i]);
                    
             await AlectoRuntimeUtils.sleep(100)
@@ -41,7 +41,7 @@ export class AlectoPacker extends AlectoComponent{
         }
         let pfolder = this.zip.folder("Comments")!
         for(let i=0;i<analyzedResult.length;i++){
-            AlectoRuntimeUtils.log("Gathering resource, at index:"+i+" / "+analyzedResult.length);
+            AlectoRuntimeUtils.log(g.lang.gatherRes+i+" / "+analyzedResult.length);
             
             let el = analyzedResult[i];
             let prefix = "Textonly";
@@ -50,7 +50,9 @@ export class AlectoPacker extends AlectoComponent{
             }else{
                 prefix = "Multimedia";
             }
-            let folder = pfolder.folder(prefix+"-"+el.date+"-"+el.user);
+            let folder_name = prefix+"-"+el.date+"-"+el.user
+            folder_name = folder_name.replace(/(\*|\/|\\|\<|\>|\|\?|\:|\")/g,"_")
+            let folder = pfolder.folder(folder_name);
             const assertValidFolder = (x:typeof folder):x is JSZip =>{
                 if(x==null){
                     return false
@@ -67,7 +69,7 @@ export class AlectoPacker extends AlectoComponent{
                     this.doCallback(cb);
 
                     //Photo
-                    AlectoRuntimeUtils.log("Fetching image resource:"+el.photos[j].replace(/\/\//g,""));
+                    AlectoRuntimeUtils.log(g.lang.gatherImage+el.photos[j].replace(/\/\//g,""));
                     let x = await AlectoRuntimeUtils.fetchBlob("https:"+el.photos[j]);
                     size+=x.size;
                     await AlectoRuntimeUtils.sleep(100);
@@ -81,7 +83,7 @@ export class AlectoPacker extends AlectoComponent{
                     } 
                     this.doCallback(cb);
                     
-                    AlectoRuntimeUtils.log("Fetching video resource:"+el.video[j].replace(/^\/\//g,""));
+                    AlectoRuntimeUtils.log(g.lang.gatherVideo+el.video[j].replace(/^\/\//g,""));
 
                     let x:Blob;
                     if(el.video[j].match(/^http/g)!=null){
@@ -95,6 +97,7 @@ export class AlectoPacker extends AlectoComponent{
                     folder.file(j+".mp4",x);
                 }
                 folder.file("comment.txt",el.content);
+                folder.file("detail.txt",el.detail);
             }else{
                 AlectoRuntimeUtils.log("Failed to create folder");
             }

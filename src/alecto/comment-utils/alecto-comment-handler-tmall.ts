@@ -64,7 +64,7 @@ export class AlectoCommentHandlerTmall extends AlectoCommentHandler{
             let rpUri = uri.replace(/currentPage.?[0-9]+/,"currentPage="+curIndex);
             //let respBody = await injector.inject(rpUri);
             let respBody = await AlectoRuntimeUtils.fetchText(rpUri)
-            AlectoRuntimeUtils.log("Initiating JSONP Request:"+rpUri);
+            AlectoRuntimeUtils.log(g.lang.initiateJSONPReq+rpUri);
             //Callback
             let cb:AlectoProgressCallback = {
                 status: g.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",
@@ -149,7 +149,8 @@ export class AlectoCommentHandlerTmall extends AlectoCommentHandler{
                         videos:[],
                         date: "",
                         user: "",
-                        content:""
+                        content:"",
+                        detail:""
                     }
                     contentIns.content = element.rateContent;
                     contentIns.user = element.displayUserNick;

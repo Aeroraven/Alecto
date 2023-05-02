@@ -1,23 +1,45 @@
-import { AlectoLangDefs } from "../core/alecto-lang-defs";
+import { AlectoDefaultLang } from "../core/alecto-lang-defs";
 
-export var AlectoLang_zhCN : AlectoLangDefs = {
-    startup:"脚本正在初始化",
-    reoverride:"正在重载原生方法",
-    initdone:"已就绪，选择启动抓取开始任务",
-    loadDeps:"正在加载依赖",
-    loadComments:"正在加载评论",
-    starts:"任务正在开始",
-    download:"正在下载资源",
-    downloaded:"已下载",
-    bundle:"正在打包文件",
-    alldone:"已完成抓取任务，检查浏览器下载查看结果。",
-    runLabel:"启动抓取",
-    about:"版本信息",
-    error:"发生错误，按下F12后选择控制台选项卡查看错误信息",
-    langChanged:"已将语言调整为 简体中文(Simplified Chinese)",
-    captchaRej:"需要完成验证码后继续。在评论页面中随机选择一页，后进行验证。验证完毕点击“版本信息”按钮确认。",
-    abstractImage:"获取介绍图片",
-    snapshot:"正在截取评论，页面可能有跳动现象",
-    cors:"由于跨域(CORS)限制，所有的图片无法正常截取。但是该功能仍然能够实现，但相对复杂。",
-    invalidPlatform:"当前平台不被支持"
+export class AlectoLang_zhCN extends AlectoDefaultLang {
+    startup="脚本正在初始化"
+    reoverride="正在重载原生方法"
+    initdone="已就绪，选择启动抓取开始任务"
+    loadDeps="正在加载依赖"
+    loadComments="正在加载评论"
+    starts="任务正在开始"
+    download="正在下载资源"
+    downloaded="已下载"
+    bundle="正在打包文件"
+    alldone="已完成抓取任务，检查浏览器下载查看结果。"
+    runLabel="启动抓取"
+    about="版本信息"
+    error="发生错误，按下F12后选择控制台选项卡查看错误信息"
+    langChanged="已将语言调整为 简体中文(Simplified Chinese)"
+    captchaRej="需要完成验证码后继续。在评论页面中随机选择一页，后进行验证。验证完毕点击“版本信息”按钮确认。"
+    abstractImage="获取介绍图片"
+    snapshot="正在截取评论，页面可能有跳动现象"
+    cors="由于跨域(CORS)限制，所有的图片无法正常截取。但是该功能仍然能够实现，但相对复杂。"
+    invalidPlatform="当前平台不被支持"
+
+    //0.3c
+    waitForInit="等待页面加载完成..."
+    initDone="初始化完毕"
+    initiateFetchReq="发起Fetch请求:"
+    initiateJSONPReq="发起JSONP请求:"
+    locatingCommentApiUrl="尝试定位评论API地址:"
+    obtainedCommentApiUrl="评论API接口已成功定位"
+    gatherRes="正在整合评论资源，编号:"
+    gatherImage="下载评论图片:"
+    gatherAbstract="下载橱窗图片:"
+    gatherVideo="下载视频:"
+    genZip="生成ZIP"
+    getBundleName="获取压缩包名"
+    replaceDataURL="替换为DataURL:"
+    captureSnapshotPage="截取页面，页码:"
+    convertToDataURL="正在将资源转换为DataURL"
+    emitAssets="释放资源"
+    matchingPlatform="匹配平台配置:"
+    recvHijackedMethods="恢复被劫持的原生JavaScript方法"
+    usingEnv="匹配运行环境配置:"
+    hijackMethod="拦截JavaScript操作:"
 }

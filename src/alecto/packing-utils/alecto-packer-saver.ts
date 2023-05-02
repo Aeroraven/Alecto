@@ -1,6 +1,7 @@
 import JSZip from "jszip";
 import { AlectoComponent } from "../core/alecto-component";
 import { AlectoRuntimeUtils } from "../core/alecto-runtime-utils";
+import { AlectoGlobal } from "../core/alecto-global";
 
 export class AlectoPackerSaver extends AlectoComponent{
     //Attribute
@@ -11,10 +12,11 @@ export class AlectoPackerSaver extends AlectoComponent{
     }
     protected async executeSelf(): Promise<void> {
         let zip = <JSZip> this.getAttribute(AlectoPackerSaver.SOURCE_BUNDLE)
+        let g = AlectoGlobal.getInst()
 
-        AlectoRuntimeUtils.log("Generating Zip")
+        AlectoRuntimeUtils.log(g.lang.genZip)
         let content = await zip.generateAsync({type:"blob"});
-        AlectoRuntimeUtils.log("Getting Bundle Name")
+        AlectoRuntimeUtils.log(g.lang.getBundleName)
         let data = document.getElementsByTagName("title")[0].innerHTML
         AlectoRuntimeUtils.download(content, data+".zip");
     }

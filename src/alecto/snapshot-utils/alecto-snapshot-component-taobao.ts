@@ -65,7 +65,7 @@ export class AlectoSnapshotComponentTaobao extends AlectoSnapshotComponentBase{
             let containerEl = <HTMLElement>document.getElementsByClassName("tb-revbd")[0];
             
             //Convert To DataURLS
-            AlectoRuntimeUtils.log("Converting image sources to data URL...")
+            AlectoRuntimeUtils.log(g.lang.convertToDataURL)
             let iterateChildren = async (e:HTMLElement)=>{
                 //AlectoRuntimeUtils.log("Finding children images:"+e)
                 for(let i=0;i<e.children.length;i++){
@@ -75,7 +75,7 @@ export class AlectoSnapshotComponentTaobao extends AlectoSnapshotComponentBase{
                         let nw = await AlectoRuntimeUtils.imageToBase64(w)
                         let sw = (<HTMLImageElement>ke)
                         sw.src = nw;
-                        AlectoRuntimeUtils.log("Replaced image with DataURL:"+w)
+                        AlectoRuntimeUtils.log(g.lang.replaceDataURL+w)
                     }else{
                         if((<HTMLElement>e.children[i]).children.length>0){
                             await iterateChildren(<HTMLElement>e.children[i])
@@ -85,7 +85,7 @@ export class AlectoSnapshotComponentTaobao extends AlectoSnapshotComponentBase{
                 }   
             }
             await iterateChildren(containerEl)
-            AlectoRuntimeUtils.log("Capturing Snapshot: Page "+index)
+            AlectoRuntimeUtils.log(g.lang.captureSnapshotPage+index)
             let canv = await html2canvas(containerEl);
             let b64 = canv.toDataURL('image/png', 1.0).replace(/^data:image\/(png|jpg);base64,/, "");
             folder!.file(index+".jpg",b64,{base64:true});

@@ -23,6 +23,7 @@ export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
     }
 
     public locateJsonpAddress(): string {
+        let g = AlectoGlobal.getInst()
         alectoNMInjectNativeMethods()
         let potential_cands = alectoNMGetXHROpenLists()
         let destAddr = ""
@@ -32,7 +33,7 @@ export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
                 destAddr = el;
             }
         });
-        AlectoRuntimeUtils.log("Find comment JSONP URI:"+destAddr);
+        AlectoRuntimeUtils.log(g.lang.locatingCommentApiUrl+destAddr);
         //destAddr = destAddr.replace(/callback\=.*&/g,"callback=jsonp442&");
         return destAddr;
     }
@@ -49,7 +50,7 @@ export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
             return false
         },500)
 
-        AlectoRuntimeUtils.log("Obtained JSONP URI")
+        AlectoRuntimeUtils.log(g.lang.obtainedCommentApiUrl)
         
         let commentLists:AlectoCommentFormat[] = [];
         let curIndex = 1;
@@ -74,7 +75,7 @@ export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
             //rpUri = encodeURIComponent(rpUri)
 
             //Update URI
-            AlectoRuntimeUtils.log("Initiating Fetch Request:"+rpUri);
+            AlectoRuntimeUtils.log(g.lang.initiateFetchReq+rpUri);
             //let respBody = await injector.inject(rpUri);
             let respBody = JSON.parse(await AlectoRuntimeUtils.fetchText(rpUri));
             console.log(respBody)
@@ -158,8 +159,10 @@ export class AlectoCommentHandlerTmallV8 extends AlectoCommentHandler{
                         videos:[],
                         date: "",
                         user: "",
-                        content:""
+                        content:"",
+                        detail:""
                     }
+                    contentIns.detail = ""
                     contentIns.content = element.reviewWordContent;
                     contentIns.user = element.userNick;
                     contentIns.date = element.reviewDate;

@@ -47,15 +47,16 @@ export class AlectoWorker extends AlectoComponent{
         sui.setup()
 
         //Initialize
+        ag.lang = new language()
         runtime.executeExternal()
-        ag.lang = language
+        
 
         //Setup UI
         await this.ui.setupBanner();
 
         //Expose 
         ag.env.alecto = this;
-        this.ui.setBannerInfo("Waiting for page loading...",AlectoUIInjectorSbtn.AUIS_HIDE);
+        this.ui.setBannerInfo(ag.lang.waitForInit,AlectoUIInjectorSbtn.AUIS_HIDE);
         let doc = AlectoGlobal.getInst().document;
         let g = AlectoGlobal.getInst()
         if(g.platform == AlectoGlobalPlatform.AGP_UNIDENTIFIED){
@@ -74,23 +75,28 @@ export class AlectoWorker extends AlectoComponent{
                 if(w!=undefined || wx.length > 0){
                     return true
                 }
-                doc.body.scrollTop = scrollH
+                doc.scrollingElement!.scrollTop = scrollH
                 scrollH += scrollHInc
                 return false
             }else{
+                
                 try{
                     let w:any = doc.getElementById("J_DivItemDesc")!.children[0].children;
                     if(w!=undefined){
                         return true
                     }
+                    doc.scrollingElement!.scrollTop=scrollH
+                    scrollH += scrollHInc
                     return false
                 }catch(e){
+                    doc.scrollingElement!.scrollTop=scrollH
+                    scrollH += scrollHInc
                     return false
                 }
             }
         },200)
         this.ui.setBannerInfo(ag.lang.initdone,AlectoUIInjectorSbtn.AUIS_SHOW);
-        AlectoRuntimeUtils.log("Initialization is done.");
+        AlectoRuntimeUtils.log(ag.lang.initDone);
 
         this.ui.setBannerTask("等待开始","任务开始")
     }

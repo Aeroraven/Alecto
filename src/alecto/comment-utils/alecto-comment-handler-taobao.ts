@@ -17,6 +17,7 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
     }
 
     public locateJsonpAddress(): string {
+        let g = AlectoGlobal.getInst()
         let htmlHead = document.getElementsByTagName("head")[0].childNodes;
         let destAddr = "";
         interface ACHNode{
@@ -36,7 +37,7 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                 }
             }
         });
-        AlectoRuntimeUtils.log("Find comment JSONP URI:"+destAddr);
+        AlectoRuntimeUtils.log(g.lang.locatingCommentApiUrl+destAddr);
         return destAddr;
     }
 
@@ -56,7 +57,7 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
         while(true){
             let rpUri = uri.replace(/currentPageNum.?[0-9]+/,"currentPageNum="+curIndex);
             let respBody = await injector.inject(rpUri);
-            AlectoRuntimeUtils.log("Initiate JSONP Request:"+rpUri);
+            AlectoRuntimeUtils.log(g.lang.initiateJSONPReq+rpUri);
             //Callback
             let cb:AlectoProgressCallback = {
                 status: g.lang.loadComments+" (Page:"+curIndex+", Items:"+commentLists.length+")",
@@ -76,7 +77,7 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                 content: string
                 user: string
                 photos: unknown[],
-                
+                detail: string,
             }
             const nodeCheck = (x:any):x is ACHRegularRespbody=>{
                 if(x==undefined||x==null){
@@ -92,11 +93,13 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                 let content = respBody.comments;
                 
                 interface ACHCommentElement{
+                    append:{photos:[]}|null,
                     date:string,
                     photos: {url:string}[],
                     video: ({cloudVideoUrl:string}|null),
                     user: {nick:string},
                     content:string,
+                    auction:{sku:string}|null,
                     appendList:{
                         content:string
                     }[]
@@ -129,8 +132,10 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                             videos:[],
                             date: "",
                             user: "",
-                            content:""
+                            content:"",
+                            detail:""
                         }
+                        contentIns.detail = (element.auction)?element.auction.sku:""
                         contentIns.content = element.content;
                         contentIns.content += (()=>{
                             let w = ""
@@ -149,6 +154,11 @@ export class AlectoCommentHandlerTaobao extends AlectoCommentHandler{
                             }
                         })()
                         contentIns.photos = element.photos
+                        if(element.append != null){
+                            element.append.photos.forEach((el)=>{
+                                contentIns.photos.push(el)
+                            })   
+                        }
                         commentLists.push(contentIns)
                     }else{
                         AlectoRuntimeUtils.log("Discarded invalid item")

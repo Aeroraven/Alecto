@@ -12,7 +12,8 @@ export class AlectoRuntime extends AlectoComponent{
         super();
     }
     private hijackNativeMethods(){
-        AlectoRuntimeUtils.log("Hijacking native methods: DOM operations")
+        let w = AlectoGlobal.getInst();
+        AlectoRuntimeUtils.log(w.lang.hijackMethod+" document.head.removeChild")
         document.head.removeChild = <T extends Node>(child:T)=>{return child}
         
         //AlectoRuntimeUtils.log("Hijacking native methods: Request operations")
@@ -24,13 +25,13 @@ export class AlectoRuntime extends AlectoComponent{
         if(typeof unsafeWindow != 'undefined'){
             w.attr.env = unsafeWindow;
             w.attr.envAttr = AlectoRunEnv.ARE_TAMPER
-            AlectoRuntimeUtils.log("Using Env: Tamper Monkey")
+            AlectoRuntimeUtils.log(w.lang.usingEnv+" Tamper Monkey")
         }
         //Browser
         else if(window != null && window != undefined){
             w.attr.env = window;
             w.attr.envAttr = AlectoRunEnv.ARE_BROWSER
-            AlectoRuntimeUtils.log("Using Env: Browser")
+            AlectoRuntimeUtils.log(w.lang.usingEnv+" Browser")
         }else{
             AlectoRuntimeUtils.log("UNSUPPORTED ENV")
         }
@@ -44,8 +45,9 @@ export class AlectoRuntime extends AlectoComponent{
     }
     
     private recoverNativeMethods(){
-        AlectoRuntimeUtils.log("Recover hijacked native methods")
+        
         let g = AlectoGlobal.getInst();
+        AlectoRuntimeUtils.log(g.lang.recvHijackedMethods)
         g.setState(AlectoGlobalCodes.AGC_REOVERRIDE);
         let _frame = document.createElement('iframe');
         document.body.appendChild(_frame);
@@ -59,25 +61,25 @@ export class AlectoRuntime extends AlectoComponent{
             let fktb = (<any>g.env).__ASSET_PATH__;
             if(fktb == null){
                 g.attr.platform = AlectoGlobalPlatform.AGP_TMALL
-                AlectoRuntimeUtils.log("Matching Platform: TMALL")
+                AlectoRuntimeUtils.log(g.lang.matchingPlatform+" TMALL")
             }else{
                 g.attr.platform = AlectoGlobalPlatform.AGP_TMALLV8
-                AlectoRuntimeUtils.log("Matching Platform: TMALL v8")
+                AlectoRuntimeUtils.log(g.lang.matchingPlatform+" TMALL v8")
             }
 
         }else if(g.env.location.href.match(/item\.taobao\..*\/.*item\.htm/g)){
             g.attr.platform = AlectoGlobalPlatform.AGP_TAOBAO
-            AlectoRuntimeUtils.log("Matching Platform: Taobao")
+            AlectoRuntimeUtils.log(g.lang.matchingPlatform+" Taobao")
         }else{
             g.attr.platform = AlectoGlobalPlatform.AGP_UNIDENTIFIED
-            AlectoRuntimeUtils.log("Matching Platform: Unknown")
+            AlectoRuntimeUtils.log(g.lang.matchingPlatform+" Unknown")
         }
     }
 
     private emitAssets(){
         let a = AlectoAssets.getInst()
         a.generateAssetCSS()
-        AlectoRuntimeUtils.log("Emitting assets")
+        AlectoRuntimeUtils.log(AlectoGlobal.getInst().lang.emitAssets)
     }
 
     protected async executeSelf(){

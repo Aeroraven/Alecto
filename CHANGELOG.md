@@ -101,3 +101,14 @@
 - Bug Fix: `TMALL Chaoshi` is not included in the user script header section.
 - Bug Fix: Snapshot component components might pass null object to the successor compoents, causing bundling error.
 - Bug Fix: UI layout rectification
+
+#### v0.3c
+
+**2023-5-2** 
+
+- New: Crawler will save product parameters associated with comments (For `TAOBAO`)
+- New: Script will start tracing `console.log` outputs.
+- Bug Fix: Comments will be ignored if the illegal characters are included in the username (For `TMALLv8`)
+- Bug Fix: Appended photos will be ignored (For `TAOBAO`)
+- Bug Fix: Worker might keep waiting for page loading at the startup stage (For `TMALLv8`)
+- Bug Fix: Data URL conversion might ignore transparency information (For `TAOBAO`)

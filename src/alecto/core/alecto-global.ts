@@ -45,7 +45,7 @@ export class AlectoGlobal{
             status : AlectoGlobalCodes.AGC_IDLE,
             platform: AlectoGlobalPlatform.AGP_UNIDENTIFIED,
             captchaConfirm: true,
-            lang: AlectoDefaultLang,
+            lang: new AlectoDefaultLang(),
             envAttr: AlectoRunEnv.ARE_BROWSER,
             envDoc: document
         }
